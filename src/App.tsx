@@ -57,44 +57,46 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SessionContextProvider> {/* Wrap the entire app with SessionContextProvider */}
-          <Routes>
-            {/* Public Pages with Layout */}
-            <Route path="/" element={<Layout><Home /></Layout>} />
-            <Route path="/about" element={<Layout><About /></Layout>} />
-            <Route path="/services" element={<Layout><Services /></Layout>} />
-            <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        {/* Temporarily remove SessionContextProvider and Layout for the root path to diagnose */}
+        <Routes>
+          {/* Directement la page Home pour le diagnostic */}
+          <Route path="/" element={<Home />} /> 
+          
+          {/* Public Pages with Layout (temporarily moved to /public-layout-test for diagnosis) */}
+          <Route path="/public-layout-test" element={<Layout><Home /></Layout>} />
+          <Route path="/about" element={<Layout><About /></Layout>} />
+          <Route path="/services" element={<Layout><Services /></Layout>} />
+          <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
-            {/* Owner Authentication */}
-            <Route path="/owner/login" element={<OwnerLogin />} />
-            <Route path="/owner/register" element={<OwnerRegister />} />
+          {/* Owner Authentication */}
+          <Route path="/owner/login" element={<OwnerLogin />} />
+          <Route path="/owner/register" element={<OwnerRegister />} />
 
-            {/* Owner Dashboard Routes (Protected) */}
-            <Route path="/owner/dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
-              <Route index element={<OwnerDashboard />} />
-              <Route path="vehicles" element={<OwnerVehicles />} />
-              <Route path="maintenance" element={<OwnerMaintenance />} />
-              <Route path="planning" element={<OwnerPlanning />} />
-              <Route path="reports" element={<OwnerReports />} />
-              {/* Add other owner dashboard routes here */}
-            </Route>
+          {/* Owner Dashboard Routes (Protected) */}
+          <Route path="/owner/dashboard" element={<SessionContextProvider><ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute></SessionContextProvider>}>
+            <Route index element={<OwnerDashboard />} />
+            <Route path="vehicles" element={<OwnerVehicles />} />
+            <Route path="maintenance" element={<OwnerMaintenance />} />
+            <Route path="planning" element={<OwnerPlanning />} />
+            <Route path="reports" element={<OwnerReports />} />
+            {/* Add other owner dashboard routes here */}
+          </Route>
 
-            {/* Admin Back-Office Routes (Protected - Placeholder for admin role check) */}
-            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboardLayout /></ProtectedRoute>}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="owners" element={<AdminOwners />} />
-              <Route path="drivers" element={<AdminDrivers />} />
-              <Route path="vehicles" element={<AdminVehicles />} />
-              <Route path="planning" element={<AdminPlanning />} />
-              <Route path="finance" element={<AdminFinance />} />
-              <Route path="notifications" element={<AdminNotifications />} />
-              {/* Add other admin dashboard routes here */}
-            </Route>
+          {/* Admin Back-Office Routes (Protected - Placeholder for admin role check) */}
+          <Route path="/admin/dashboard" element={<SessionContextProvider><ProtectedRoute roles={['admin']}><AdminDashboardLayout /></ProtectedRoute></SessionContextProvider>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="owners" element={<AdminOwners />} />
+            <Route path="drivers" element={<AdminDrivers />} />
+            <Route path="vehicles" element={<AdminVehicles />} />
+            <Route path="planning" element={<AdminPlanning />} />
+            <Route path="finance" element={<AdminFinance />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            {/* Add other admin dashboard routes here */}
+          </Route>
 
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </SessionContextProvider>
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
