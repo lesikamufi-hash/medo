@@ -62,6 +62,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // FutiCoop Custom Colors
+        'futi-night-blue': '#0A1931', // A deep, dark blue
+        'futi-gold': '#FFD700',      // A vibrant gold
+        'futi-white': '#FFFFFF',     // Pure white
       },
       borderRadius: {
         lg: "var(--radius)",
