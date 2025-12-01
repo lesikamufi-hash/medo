@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,12 +6,27 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
+import { useSession } from '@/components/SessionContextProvider';
 
 const OwnerLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user: sessionUser, isLoading: isSessionLoading } = useSession();
+
+  useEffect(() => {
+    if (!isSessionLoading && sessionUser) {
+      if (sessionUser.role === 'owner') {
+        navigate('/owner/dashboard', { replace: true });
+      } else if (sessionUser.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        // If user is logged in but has no specific role or an unexpected role, redirect to home
+        navigate('/', { replace: true });
+      }
+    }
+  }, [sessionUser, isSessionLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +43,7 @@ const OwnerLogin = () => {
         showError(error.message);
       } else {
         showSuccess("Connexion réussie ! Redirection vers votre tableau de bord.");
-        navigate('/owner/dashboard'); // Redirect to dashboard on successful login
+        // Removed direct navigate here. SessionContextProvider's onAuthStateChange will handle it.
       }
     } catch (error: any) {
       showError(error.message);

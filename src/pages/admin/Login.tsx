@@ -13,17 +13,15 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user: sessionUser, isLoading: isSessionLoading } = useSession(); // Renommé pour éviter les conflits
+  const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
   useEffect(() => {
-    console.log("AdminLogin useEffect (from SessionContext): isSessionLoading:", isSessionLoading, "sessionUser:", sessionUser);
     if (!isSessionLoading && sessionUser) {
       if (sessionUser.role === 'admin') {
-        console.log("AdminLogin useEffect: Admin user detected from SessionContext, redirecting to /admin/dashboard");
         navigate('/admin/dashboard', { replace: true });
       } else {
-        console.log("AdminLogin useEffect: Non-admin user detected from SessionContext, redirecting to /");
-        navigate('/', { replace: true }); // Redirect non-admin logged-in users away
+        // Redirect non-admin logged-in users away from admin login
+        navigate('/', { replace: true });
       }
     }
   }, [sessionUser, isSessionLoading, navigate]);
@@ -31,7 +29,6 @@ const AdminLogin = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    console.log("AdminLogin: Starting login process for email:", email);
     const toastId = showLoading("Connexion Admin en cours...");
 
     try {
@@ -45,35 +42,9 @@ const AdminLogin = () => {
         showError(error.message);
       } else if (data.user) {
         console.log("AdminLogin: Supabase signInWithPassword successful. User data:", data.user);
-
-        // Explicitly fetch user role immediately after successful login
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('role:roles(name)')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileError) {
-          console.error("AdminLogin: Error fetching user profile/role after login:", profileError.message);
-          showError("Erreur lors de la récupération du profil utilisateur.");
-          await supabase.auth.signOut(); // Sign out if role cannot be fetched
-          navigate('/admin', { replace: true });
-          return;
-        }
-
-        const userRole = profileData?.role?.name;
-        console.log("AdminLogin: Fetched user role directly:", userRole);
-
-        if (userRole === 'admin') {
-          showSuccess("Connexion Admin réussie ! Redirection vers le tableau de bord.");
-          navigate('/admin/dashboard', { replace: true }); // Direct navigation for admin
-        } else {
-          showError("Accès refusé : Vous n'avez pas les privilèges d'administrateur.");
-          await supabase.auth.signOut(); // Sign out if not an admin
-          navigate('/admin', { replace: true });
-        }
+        showSuccess("Connexion réussie ! Vérification des privilèges...");
+        // The SessionContextProvider's onAuthStateChange will now fetch the role and handle navigation
       } else {
-        // This case might happen if email confirmation is required but no user/session is returned immediately
         console.log("AdminLogin: signInWithPassword returned no user/session, possibly awaiting email confirmation.");
         showError("Connexion échouée ou confirmation d'e-mail requise.");
       }

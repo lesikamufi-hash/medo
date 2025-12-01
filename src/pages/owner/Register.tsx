@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
+import { useSession } from '@/components/SessionContextProvider';
 
 const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
@@ -16,6 +17,20 @@ const OwnerRegister = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user: sessionUser, isLoading: isSessionLoading } = useSession();
+
+  useEffect(() => {
+    if (!isSessionLoading && sessionUser) {
+      if (sessionUser.role === 'owner') {
+        navigate('/owner/dashboard', { replace: true });
+      } else if (sessionUser.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        // If user is logged in but has no specific role or an unexpected role, redirect to home
+        navigate('/', { replace: true });
+      }
+    }
+  }, [sessionUser, isSessionLoading, navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +52,6 @@ const OwnerRegister = () => {
             last_name: lastName,
             phone_number: phone,
           },
-          // emailRedirectTo est supprimé car la confirmation par e-mail est désactivée
         },
       });
 
@@ -45,14 +59,10 @@ const OwnerRegister = () => {
         console.error("Register: Supabase signUp error:", error.message);
         showError(error.message);
       } else if (data.user) {
-        // Si la confirmation par e-mail est désactivée, l'utilisateur est directement connecté
         console.log("Register: Supabase signUp successful and user logged in. Data:", data);
         showSuccess("Inscription réussie ! Redirection vers votre tableau de bord.");
-        console.log("Register: Navigating to /owner/dashboard");
-        navigate('/owner/dashboard'); // Rediriger directement vers le tableau de bord
+        // Removed direct navigate here. SessionContextProvider's onAuthStateChange will handle it.
       } else {
-        // Ce cas ne devrait pas se produire si la confirmation par e-mail est désactivée
-        // mais on le garde pour une robustesse générale.
         console.log("Register: signUp returned no user, but no error. This might indicate an unexpected state.");
         showError("Inscription réussie, mais connexion automatique échouée. Veuillez essayer de vous connecter.");
         navigate('/owner/login');
