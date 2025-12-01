@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, Eye, Handshake, History } from 'lucide-react';
+import { Target, Eye, Handshake, History, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const About = () => {
