@@ -54,9 +54,10 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           const userWithRole: UserWithRole = { ...currentSession.user, role };
           setSession(currentSession);
           setUser(userWithRole);
+          console.log("User authenticated:", userWithRole); // Debug log
 
           // Redirect authenticated users from login/register pages to their dashboard
-          if (location.pathname === '/owner/login' || location.pathname === '/owner/register') {
+          if (location.pathname === '/owner/login' || location.pathname === '/owner/register' || location.pathname === '/admin') {
             if (role === 'admin') {
               navigate('/admin/dashboard');
             } else {
@@ -79,7 +80,8 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           const userWithRole: UserWithRole = { ...session.user, role };
           setSession(session);
           setUser(userWithRole);
-          if (location.pathname === '/owner/login' || location.pathname === '/owner/register') {
+          console.log("Initial session user:", userWithRole); // Debug log
+          if (location.pathname === '/owner/login' || location.pathname === '/owner/register' || location.pathname === '/admin') {
             if (role === 'admin') {
               navigate('/admin/dashboard');
             } else {
