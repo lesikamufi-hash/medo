@@ -99,3 +99,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Styles for Embla Carousel */
+.embla {
+  position: relative;
+}
+
+.embla__viewport {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  min-width: 0; /* Important for flex items */
+}
