@@ -85,7 +85,7 @@ const App = () => (
               <Route path="owners" element={<AdminOwners />} />
               <Route path="drivers" element={<AdminDrivers />} />
               <Route path="vehicles" element={<AdminVehicles />} />
-              <Route path="planning" element="<AdminPlanning />" /> {/* Correction: doit être un composant */}
+              <Route path="planning" element={<AdminPlanning />} /> {/* Correction appliquée ici */}
               <Route path="finance" element={<AdminFinance />} />
               <Route path="notifications" element={<AdminNotifications />} />
               {/* Add other admin dashboard routes here */}
