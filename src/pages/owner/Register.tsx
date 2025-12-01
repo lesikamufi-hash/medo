@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const OwnerRegister = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-gold/20">
+      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-orange/20">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-futi-night-blue">
             Inscription Propriétaire
@@ -28,7 +28,7 @@ const OwnerRegister = () => {
                 autoComplete="name"
                 required
                 placeholder="Nom complet"
-                className="relative block w-full px-3 py-2 border border-futi-gold/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-gold focus:border-futi-gold sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
             <div>
@@ -40,7 +40,7 @@ const OwnerRegister = () => {
                 autoComplete="tel"
                 required
                 placeholder="Numéro de téléphone"
-                className="relative block w-full px-3 py-2 border border-futi-gold/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-gold focus:border-futi-gold sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
             <div>
@@ -52,7 +52,7 @@ const OwnerRegister = () => {
                 autoComplete="email"
                 required
                 placeholder="Adresse e-mail"
-                className="relative block w-full px-3 py-2 border border-futi-gold/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-gold focus:border-futi-gold sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
             <div>
@@ -64,7 +64,7 @@ const OwnerRegister = () => {
                 autoComplete="new-password"
                 required
                 placeholder="Mot de passe"
-                className="relative block w-full px-3 py-2 border border-futi-gold/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-gold focus:border-futi-gold sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
             <div>
@@ -76,14 +76,14 @@ const OwnerRegister = () => {
                 autoComplete="new-password"
                 required
                 placeholder="Confirmer le mot de passe"
-                className="relative block w-full px-3 py-2 border border-futi-gold/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-gold focus:border-futi-gold sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
 
             <div>
               <Button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-gold hover:bg-futi-gold/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-gold"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-orange hover:bg-futi-orange/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-orange"
               >
                 S'inscrire
               </Button>
@@ -91,7 +91,7 @@ const OwnerRegister = () => {
           </form>
           <div className="mt-6 text-center text-sm text-gray-600">
             Déjà un compte ?{' '}
-            <Link to="/owner/login" className="font-medium text-futi-night-blue hover:text-futi-gold">
+            <Link to="/owner/login" className="font-medium text-futi-night-blue hover:text-futi-orange">
               Connectez-vous
             </Link>
           </div>

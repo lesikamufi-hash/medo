@@ -22,10 +22,10 @@ const AdminFinance = () => {
       <h2 className="text-3xl font-bold text-futi-night-blue">Recettes & Dépenses</h2>
 
       {/* Revenues Section */}
-      <Card className="shadow-md border-futi-gold/20">
+      <Card className="shadow-md border-futi-orange/20">
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Recettes</CardTitle>
-          <Button className="bg-futi-gold text-futi-night-blue hover:bg-futi-gold/90">
+          <Button className="bg-futi-orange text-futi-night-blue hover:bg-futi-orange/90">
             <PlusCircle className="h-4 w-4 mr-2" /> Ajouter une recette
           </Button>
         </CardHeader>
@@ -48,7 +48,7 @@ const AdminFinance = () => {
                   <TableCell>{revenue.date}</TableCell>
                   <TableCell>{revenue.type}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-gold/10 mr-2">
+                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-orange/10 mr-2">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100">
@@ -63,10 +63,10 @@ const AdminFinance = () => {
       </Card>
 
       {/* Expenses Section */}
-      <Card className="shadow-md border-futi-gold/20">
+      <Card className="shadow-md border-futi-orange/20">
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Dépenses</CardTitle>
-          <Button className="bg-futi-gold text-futi-night-blue hover:bg-futi-gold/90">
+          <Button className="bg-futi-orange text-futi-night-blue hover:bg-futi-orange/90">
             <PlusCircle className="h-4 w-4 mr-2" /> Ajouter une dépense
           </Button>
         </CardHeader>
@@ -89,7 +89,7 @@ const AdminFinance = () => {
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>{expense.date}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-gold/10 mr-2">
+                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-orange/10 mr-2">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100">

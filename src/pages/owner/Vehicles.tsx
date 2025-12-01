@@ -15,12 +15,12 @@ const OwnerVehicles = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-futi-night-blue">Mes Véhicules</h2>
-        <Button className="bg-futi-gold text-futi-night-blue hover:bg-futi-gold/90">
+        <Button className="bg-futi-orange text-futi-night-blue hover:bg-futi-orange/90">
           <PlusCircle className="h-4 w-4 mr-2" /> Ajouter un véhicule
         </Button>
       </div>
 
-      <Card className="shadow-md border-futi-gold/20">
+      <Card className="shadow-md border-futi-orange/20">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Liste des véhicules</CardTitle>
         </CardHeader>
@@ -53,7 +53,7 @@ const OwnerVehicles = () => {
                   </TableCell>
                   <TableCell>{vehicle.entryDate}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-gold/10 mr-2">
+                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-orange/10 mr-2">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100">
