@@ -42,7 +42,7 @@ const Home = () => {
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section 
-        className="relative text-futi-white py-20 md:py-32 overflow-hidden min-h-[60vh] flex items-center justify-center bg-cover bg-center"
+        className="relative text-futi-white py-20 md:py-32 overflow-hidden min-h-[60vh] flex items-center justify-center bg-cover bg-center bg-fixed" {/* Ajout de bg-fixed ici */}
         style={{ backgroundImage: "url('/aston-martin-black-car-dark.jpg')" }} // Nouvelle image de fond statique
       >
         {/* <ImageCarousel images={heroImages} /> */} {/* Supprimé le carrousel */}
