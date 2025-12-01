@@ -4,21 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { UserPlus, UserMinus, Trash2 } from 'lucide-react';
+import { UserMinus, Trash2 } from 'lucide-react'; // Removed UserPlus
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface UserProfile {
   id: string;
@@ -32,11 +20,7 @@ interface UserProfile {
 const AdminManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newFirstName, setNewFirstName] = useState('');
-  const [newLastName, setNewLastName] = useState('');
-  const [newEmail, setNewEmail] = useState('');
-  const [newRole, setNewRole] = useState('owner'); // Default role for new users
+  // Removed isDialogOpen and form states for adding user, and Dialog components
 
   const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/manage-users`;
 
@@ -156,123 +140,11 @@ const AdminManagement = () => {
     }
   };
 
-  const handleAddUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const toastId = showLoading("Création de l'utilisateur...");
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Aucune session active. Veuillez vous connecter en tant qu'administrateur Supabase.");
-      }
-
-      const response = await fetch(`${EDGE_FUNCTION_URL}/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          email: newEmail,
-          firstName: newFirstName,
-          lastName: newLastName,
-          roleName: newRole,
-        }),
-      });
-
-      if (!response.ok) {
-        let errorData;
-        try {
-          errorData = await response.json();
-        } catch (jsonError) {
-          throw new Error(`Erreur du serveur (statut ${response.status}): ${response.statusText || 'Réponse non-JSON ou vide'}`);
-        }
-        throw new Error(errorData.error || `Échec de la création de l'utilisateur (statut ${response.status})`);
-      }
-
-      showSuccess("Utilisateur créé avec succès. Un lien magique a été envoyé à son adresse e-mail.");
-      setIsDialogOpen(false);
-      setNewFirstName('');
-      setNewLastName('');
-      setNewEmail('');
-      setNewRole('owner'); // Reset to default
-      fetchUsers(); // Refresh the list
-    } catch (error: any) {
-      showError(error.message);
-      console.error("Erreur lors de la création de l'utilisateur :", error);
-    } finally {
-      dismissToast(toastId);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-futi-night-blue">Gestion des Utilisateurs</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">
-              <UserPlus className="h-4 w-4 mr-2" /> Ajouter un utilisateur
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-futi-night-blue">Ajouter un nouvel utilisateur</DialogTitle>
-              <DialogDescription>
-                Créez un nouveau compte utilisateur. Un lien magique sera envoyé à son adresse e-mail pour la première connexion.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddUser} className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="newFirstName" className="text-right text-futi-night-blue">Prénom</Label>
-                <Input
-                  id="newFirstName"
-                  value={newFirstName}
-                  onChange={(e) => setNewFirstName(e.target.value)}
-                  className="col-span-3 border-futi-accent/30 focus:border-futi-accent focus:ring-futi-accent"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="newLastName" className="text-right text-futi-night-blue">Nom</Label>
-                <Input
-                  id="newLastName"
-                  value={newLastName}
-                  onChange={(e) => setNewLastName(e.target.value)}
-                  className="col-span-3 border-futi-accent/30 focus:border-futi-accent focus:ring-futi-accent"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="newEmail" className="text-right text-futi-night-blue">Email</Label>
-                <Input
-                  id="newEmail"
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  className="col-span-3 border-futi-accent/30 focus:border-futi-accent focus:ring-futi-accent"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="newRole" className="text-right text-futi-night-blue">Rôle</Label>
-                <Select value={newRole} onValueChange={setNewRole}>
-                  <SelectTrigger id="newRole" className="col-span-3 border-futi-accent/30 focus:ring-futi-accent focus:border-futi-accent">
-                    <SelectValue placeholder="Sélectionner un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="owner">Propriétaire</SelectItem>
-                    <SelectItem value="admin">Administrateur</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">
-                  Créer l'utilisateur
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {/* Removed "Ajouter un utilisateur" button and dialog */}
       </div>
 
       <Card className="shadow-md border-futi-accent/20">

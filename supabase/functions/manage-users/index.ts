@@ -126,37 +126,7 @@ serve(async (req) => {
       })
     }
 
-    if (req.method === 'POST' && pathSegments.includes('create')) {
-      const { email, firstName, lastName, roleName } = body
-
-      const { data: roleData, error: roleError } = await supabaseAdmin
-        .from('roles')
-        .select('id')
-        .eq('name', roleName)
-        .single()
-
-      if (roleError || !roleData) throw new Error(`Role '${roleName}' not found.`)
-
-      // Use inviteUserByEmail for Magic Link based user creation
-      const { data: invitedUser, error: inviteUserError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
-        email,
-        {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            initial_role_id: roleData.id, // Pass the role ID to the trigger
-          },
-          redirectTo: `${Deno.env.get('SUPABASE_URL')}/auth/v1/callback`, // Generic callback, SessionContextProvider will handle final redirect
-        }
-      )
-
-      if (inviteUserError) throw inviteUserError
-
-      return new Response(JSON.stringify({ message: 'User invited successfully, magic link sent to email', userId: invitedUser.user?.id }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 201,
-      })
-    }
+    // Removed the 'create' endpoint for adding users via magic link
 
     if (req.method === 'DELETE' && pathSegments.includes('manage-users') && pathSegments.length === 4) {
       const userIdToDelete = pathSegments[3]

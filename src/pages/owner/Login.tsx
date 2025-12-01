@@ -12,8 +12,8 @@ import { useSession } from '@/components/SessionContextProvider';
 
 const OwnerLogin = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
@@ -29,24 +29,22 @@ const OwnerLogin = () => {
     }
   }, [sessionUser, isSessionLoading, navigate]);
 
-  const handleSendMagicLink = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = showLoading("Envoi du lien magique...");
+    const toastId = showLoading("Connexion en cours...");
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/owner/dashboard`, // Redirect to owner dashboard after magic link click
-        },
+        password: password,
       });
 
       if (error) {
         showError(error.message);
       } else {
-        showSuccess("Lien magique envoyé à votre adresse e-mail ! Vérifiez votre boîte de réception.");
-        setMagicLinkSent(true);
+        showSuccess("Connexion réussie ! Redirection vers votre tableau de bord.");
+        // SessionContextProvider will handle navigation
       }
     } catch (error: any) {
       showError(error.message);
@@ -72,11 +70,11 @@ const OwnerLogin = () => {
             Connexion Propriétaire
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Connectez-vous à votre espace FutiCoop avec votre adresse e-mail
+            Connectez-vous à votre espace FutiCoop
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6" onSubmit={handleSendMagicLink}>
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
               <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
               <Input
@@ -89,7 +87,20 @@ const OwnerLogin = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-                disabled={magicLinkSent}
+              />
+            </div>
+            <div>
+              <Label htmlFor="password" className="sr-only">Mot de passe</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
 
@@ -99,7 +110,7 @@ const OwnerLogin = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
-                {loading ? "Envoi..." : (magicLinkSent ? "Lien envoyé !" : "Envoyer le lien magique")}
+                {loading ? "Connexion..." : "Se connecter"}
               </Button>
             </div>
           </form>

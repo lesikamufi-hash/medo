@@ -14,8 +14,9 @@ const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
@@ -31,16 +32,23 @@ const OwnerRegister = () => {
     }
   }, [sessionUser, isSessionLoading, navigate]);
 
-  const handleRegisterAndSendMagicLink = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = showLoading("Inscription et envoi du lien magique...");
+    const toastId = showLoading("Inscription en cours...");
+
+    if (password !== confirmPassword) {
+      showError("Les mots de passe ne correspondent pas.");
+      setLoading(false);
+      dismissToast(toastId);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.signUp({
         email: email,
+        password: password,
         options: {
-          emailRedirectTo: `${window.location.origin}/owner/dashboard`, // Redirect to owner dashboard after magic link click
           data: {
             first_name: firstName,
             last_name: lastName,
@@ -52,8 +60,8 @@ const OwnerRegister = () => {
       if (error) {
         showError(error.message);
       } else {
-        showSuccess("Lien magique envoyé à votre adresse e-mail ! Vérifiez votre boîte de réception pour finaliser l'inscription.");
-        setMagicLinkSent(true);
+        showSuccess("Inscription réussie ! Vous pouvez maintenant vous connecter.");
+        navigate('/owner/login', { replace: true });
       }
     } catch (error: any) {
       showError(error.message);
@@ -79,57 +87,81 @@ const OwnerRegister = () => {
             Inscription Propriétaire
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Créez votre compte FutiCoop avec votre adresse e-mail
+            Créez votre compte FutiCoop
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6" onSubmit={handleRegisterAndSendMagicLink}>
-            {!magicLinkSent && (
-              <>
-                <div>
-                  <Label htmlFor="firstName" className="sr-only">Prénom</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    placeholder="Prénom"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName" className="sr-only">Nom de famille</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    placeholder="Nom de famille"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="Adresse e-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-                  />
-                </div>
-              </>
-            )}
+          <form className="mt-8 space-y-6" onSubmit={handleRegister}>
+            <div>
+              <Label htmlFor="firstName" className="sr-only">Prénom</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                required
+                placeholder="Prénom"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="lastName" className="sr-only">Nom de famille</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                required
+                placeholder="Nom de famille"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="Adresse e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="password" className="sr-only">Mot de passe</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirmPassword" className="sr-only">Confirmer le mot de passe</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                placeholder="Confirmer le mot de passe"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
 
             <div>
               <Button
@@ -137,7 +169,7 @@ const OwnerRegister = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
-                {loading ? "Envoi..." : (magicLinkSent ? "Lien envoyé !" : "S'inscrire et envoyer le lien magique")}
+                {loading ? "Inscription..." : "S'inscrire"}
               </Button>
             </div>
           </form>
