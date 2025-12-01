@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,25 +10,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { useSession } from '@/components/SessionContextProvider';
 
-// Helper function to format phone number to E.164
-const formatPhoneNumber = (phone: string) => {
-  // Remove all non-digit characters
-  const digitsOnly = phone.replace(/\D/g, '');
-  // Ensure it starts with a '+' and includes country code.
-  // For simplicity, assuming +243 for Congo if not already present.
-  if (!digitsOnly.startsWith('243') && digitsOnly.length > 0) {
-    return `+243${digitsOnly}`;
-  }
-  return `+${digitsOnly}`;
-};
-
 const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
@@ -42,21 +31,19 @@ const OwnerRegister = () => {
     }
   }, [sessionUser, isSessionLoading, navigate]);
 
-  const handleSendOtp = async (e: React.FormEvent) => {
+  const handleRegisterAndSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = showLoading("Envoi du code OTP...");
-    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+    const toastId = showLoading("Inscription et envoi du lien magique...");
 
     try {
-      // For registration, we use signUp with phone and pass metadata
       const { error } = await supabase.auth.signUp({
-        phone: formattedPhoneNumber,
+        email: email,
         options: {
+          emailRedirectTo: `${window.location.origin}/owner/dashboard`, // Redirect to owner dashboard after magic link click
           data: {
             first_name: firstName,
             last_name: lastName,
-            // Assuming 'owner' role is default for new registrations
             initial_role_id: 'owner', // This will be handled by the handle_new_user trigger
           },
         },
@@ -65,35 +52,8 @@ const OwnerRegister = () => {
       if (error) {
         showError(error.message);
       } else {
-        showSuccess("Code OTP envoyé à votre numéro de téléphone !");
-        setOtpSent(true);
-      }
-    } catch (error: any) {
-      showError(error.message);
-    } finally {
-      dismissToast(toastId);
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const toastId = showLoading("Vérification du code OTP...");
-    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        phone: formattedPhoneNumber,
-        token: otp,
-        type: 'sms',
-      });
-
-      if (error) {
-        showError(error.message);
-      } else {
-        showSuccess("Inscription et connexion réussies ! Redirection vers votre tableau de bord.");
-        // SessionContextProvider will handle navigation
+        showSuccess("Lien magique envoyé à votre adresse e-mail ! Vérifiez votre boîte de réception pour finaliser l'inscription.");
+        setMagicLinkSent(true);
       }
     } catch (error: any) {
       showError(error.message);
@@ -119,12 +79,12 @@ const OwnerRegister = () => {
             Inscription Propriétaire
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Créez votre compte FutiCoop avec votre numéro de téléphone
+            Créez votre compte FutiCoop avec votre adresse e-mail
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6" onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
-            {!otpSent && (
+          <form className="mt-8 space-y-6" onSubmit={handleRegisterAndSendMagicLink}>
+            {!magicLinkSent && (
               <>
                 <div>
                   <Label htmlFor="firstName" className="sr-only">Prénom</Label>
@@ -155,36 +115,20 @@ const OwnerRegister = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phoneNumber" className="sr-only">Numéro de téléphone</Label>
+                  <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
                   <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    type="tel"
-                    autoComplete="tel"
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
                     required
-                    placeholder="Numéro de téléphone (ex: +243837767676)"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="Adresse e-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
                   />
                 </div>
               </>
-            )}
-
-            {otpSent && (
-              <div>
-                <Label htmlFor="otp" className="sr-only">Code OTP</Label>
-                <Input
-                  id="otp"
-                  name="otp"
-                  type="text"
-                  required
-                  placeholder="Code OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-                />
-              </div>
             )}
 
             <div>
@@ -193,7 +137,7 @@ const OwnerRegister = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
-                {loading ? (otpSent ? "Vérification..." : "Envoi...") : (otpSent ? "Vérifier le code" : "S'inscrire et envoyer le code OTP")}
+                {loading ? "Envoi..." : (magicLinkSent ? "Lien envoyé !" : "S'inscrire et envoyer le lien magique")}
               </Button>
             </div>
           </form>
