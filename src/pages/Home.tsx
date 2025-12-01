@@ -33,6 +33,8 @@ const Home = () => {
     '/aston-martin-black-car.jpg',
     '/car-background.jpg',
     '/driver-background.jpg',
+    '/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg', // Nouvelle image
+    '/moto-cool-a-l-interieur.jpg', // Nouvelle image
   ];
 
   return (
