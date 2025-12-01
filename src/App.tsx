@@ -30,7 +30,7 @@ import { SessionContextProvider, useSession } from "./components/SessionContextP
 const queryClient = new QueryClient();
 
 // ProtectedRoute component
-const ProtectedRoute: React.FC<{ children: React.ReactNode, roles?: string[] }> = ({ children, roles }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode, requiredRole?: string }> = ({ children, requiredRole }) => {
   const { user, isLoading } = useSession();
 
   if (isLoading) {
@@ -41,11 +41,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode, roles?: string[] }> 
     return <Navigate to="/owner/login" replace />;
   }
 
-  // Basic role check (can be expanded with actual role management from profiles table)
-  // For now, we'll assume any authenticated user can access owner dashboard
-  // and we'll need more logic for admin roles later.
-  if (roles && roles.includes('admin') && user.email !== 'admin@example.com') { // Placeholder for admin check
-    return <Navigate to="/owner/dashboard" replace />; // Redirect non-admins
+  if (requiredRole && user.role !== requiredRole) {
+    // If user is logged in but doesn't have the required role, redirect them
+    if (user.role === 'owner') {
+      return <Navigate to="/owner/dashboard" replace />;
+    }
+    // Default redirect for other unauthorized roles or no specific role
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -70,7 +72,7 @@ const App = () => (
             <Route path="/owner/register" element={<OwnerRegister />} />
 
             {/* Owner Dashboard Routes (Protected) */}
-            <Route path="/owner/dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
+            <Route path="/owner/dashboard" element={<ProtectedRoute requiredRole="owner"><OwnerDashboardLayout /></ProtectedRoute>}>
               <Route index element={<OwnerDashboard />} />
               <Route path="vehicles" element={<OwnerVehicles />} />
               <Route path="maintenance" element={<OwnerMaintenance />} />
@@ -79,9 +81,9 @@ const App = () => (
               {/* Add other owner dashboard routes here */}
             </Route>
 
-            {/* Admin Back-Office Routes (Protected - Placeholder for admin role check) */}
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} /> {/* Redirection ajoutée ici */}
-            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboardLayout /></ProtectedRoute>}>
+            {/* Admin Back-Office Routes (Protected) */}
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboardLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="owners" element={<AdminOwners />} />
               <Route path="drivers" element={<AdminDrivers />} />
