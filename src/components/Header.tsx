@@ -8,8 +8,8 @@ const Header = () => {
   return (
     <header className="bg-futi-night-blue text-futi-white shadow-md">
       <div className="container mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="text-2xl font-bold text-futi-orange">
-          FutiCoop
+        <Link to="/" className="text-2xl font-bold">
+          <span className="text-futi-white">Futi</span><span className="text-futi-orange">Coop</span>
         </Link>
 
         <nav className="hidden md:flex space-x-6 items-center">

@@ -39,7 +39,9 @@ const OwnerDashboardLayout = () => {
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 bg-futi-night-blue text-futi-white p-6 shadow-lg">
-        <div className="text-2xl font-bold text-futi-orange mb-8">FutiCoop</div>
+        <div className="text-2xl font-bold mb-8">
+          <span className="text-futi-white">Futi</span><span className="text-futi-orange">Coop</span>
+        </div>
         <nav className="space-y-2">
           {navItems.map((item) => (
             <Link
@@ -79,7 +81,7 @@ const OwnerDashboardLayout = () => {
           {/* User profile/notifications can go here */}
           <div className="flex items-center space-x-4">
             <span className="text-gray-700">Bienvenue, Propriétaire !</span>
-            {/* Avatar or user menu */}
+            {/* Avatar ou menu utilisateur */}
           </div>
         </header>
         <main className="flex-1 p-6 overflow-auto">
