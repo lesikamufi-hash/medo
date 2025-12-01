@@ -69,7 +69,7 @@ const OwnerRegister = () => {
       {/* Dark overlay for contrast */}
       <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
 
-      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-orange/20 relative z-10">
+      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-accent/20 relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-futi-night-blue">
             Inscription Propriétaire
@@ -91,7 +91,7 @@ const OwnerRegister = () => {
                 placeholder="Prénom"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
             <div>
@@ -105,7 +105,7 @@ const OwnerRegister = () => {
                 placeholder="Nom de famille"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
             <div>
@@ -119,7 +119,7 @@ const OwnerRegister = () => {
                 placeholder="Numéro de téléphone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
             <div>
@@ -133,7 +133,7 @@ const OwnerRegister = () => {
                 placeholder="Adresse e-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
             <div>
@@ -147,7 +147,7 @@ const OwnerRegister = () => {
                 placeholder="Mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
             <div>
@@ -161,14 +161,14 @@ const OwnerRegister = () => {
                 placeholder="Confirmer le mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
 
             <div>
               <Button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-orange hover:bg-futi-orange/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-orange"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
                 {loading ? "Inscription..." : "S'inscrire"}
@@ -177,7 +177,7 @@ const OwnerRegister = () => {
           </form>
           <div className="mt-6 text-center text-sm text-gray-600">
             Déjà un compte ?{' '}
-            <Link to="/owner/login" className="font-medium text-futi-night-blue hover:text-futi-orange">
+            <Link to="/owner/login" className="font-medium text-futi-night-blue hover:text-futi-accent">
               Connectez-vous
             </Link>
           </div>

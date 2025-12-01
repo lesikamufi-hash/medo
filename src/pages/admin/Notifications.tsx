@@ -15,7 +15,7 @@ const AdminNotifications = () => {
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-futi-night-blue">Notifications</h2>
 
-      <Card className="shadow-md border-futi-orange/20">
+      <Card className="shadow-md border-futi-accent/20">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Liste des notifications</CardTitle>
         </CardHeader>

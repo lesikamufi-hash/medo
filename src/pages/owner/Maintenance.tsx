@@ -15,12 +15,12 @@ const OwnerMaintenance = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-futi-night-blue">Carnet d'entretien</h2>
-        <Button className="bg-futi-orange text-futi-night-blue hover:bg-futi-orange/90">
+        <Button className="bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">
           <PlusCircle className="h-4 w-4 mr-2" /> Ajouter un entretien
         </Button>
       </div>
 
-      <Card className="shadow-md border-futi-orange/20">
+      <Card className="shadow-md border-futi-accent/20">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Historique des entretiens</CardTitle>
         </CardHeader>
@@ -45,7 +45,7 @@ const OwnerMaintenance = () => {
                   <TableCell>{log.cost}</TableCell>
                   <TableCell>{log.garage}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-orange/10 mr-2">
+                    <Button variant="ghost" size="icon" className="text-futi-night-blue hover:bg-futi-accent/10 mr-2">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100">

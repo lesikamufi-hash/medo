@@ -9,7 +9,7 @@ const OwnerReports = () => {
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-futi-night-blue">Rapports & Traçabilité</h2>
 
-      <Card className="shadow-md border-futi-orange/20">
+      <Card className="shadow-md border-futi-accent/20">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Générer un rapport PDF</CardTitle>
         </CardHeader>
@@ -18,7 +18,7 @@ const OwnerReports = () => {
             <div>
               <label htmlFor="report-type" className="block text-sm font-medium text-gray-700 mb-1">Type de rapport</label>
               <Select>
-                <SelectTrigger id="report-type" className="w-full border-futi-orange/30 focus:ring-futi-orange focus:border-futi-orange">
+                <SelectTrigger id="report-type" className="w-full border-futi-accent/30 focus:ring-futi-accent focus:border-futi-accent">
                   <SelectValue placeholder="Sélectionner un type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -32,7 +32,7 @@ const OwnerReports = () => {
             <div>
               <label htmlFor="report-period" className="block text-sm font-medium text-gray-700 mb-1">Période</label>
               <Select>
-                <SelectTrigger id="report-period" className="w-full border-futi-orange/30 focus:ring-futi-orange focus:border-futi-orange">
+                <SelectTrigger id="report-period" className="w-full border-futi-accent/30 focus:ring-futi-accent focus:border-futi-accent">
                   <SelectValue placeholder="Sélectionner une période" />
                 </SelectTrigger>
                 <SelectContent>
@@ -44,13 +44,13 @@ const OwnerReports = () => {
               </Select>
             </div>
           </div>
-          <Button className="w-full bg-futi-orange text-futi-night-blue hover:bg-futi-orange/90">
+          <Button className="w-full bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">
             <Download className="h-4 w-4 mr-2" /> Télécharger le rapport
           </Button>
         </CardContent>
       </Card>
 
-      <Card className="shadow-md border-futi-orange/20">
+      <Card className="shadow-md border-futi-accent/20">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-futi-night-blue">Documents Téléchargeables</CardTitle>
         </CardHeader>
@@ -60,7 +60,7 @@ const OwnerReports = () => {
               <FileText className="h-5 w-5 text-futi-night-blue" />
               <span>Contrat de service FutiCoop.pdf</span>
             </div>
-            <Button variant="outline" size="sm" className="text-futi-night-blue border-futi-orange hover:bg-futi-orange/10">
+            <Button variant="outline" size="sm" className="text-futi-night-blue border-futi-accent hover:bg-futi-accent/10">
               Télécharger
             </Button>
           </div>
@@ -69,7 +69,7 @@ const OwnerReports = () => {
               <FileText className="h-5 w-5 text-futi-night-blue" />
               <span>Facture Janvier 2024.pdf</span>
             </div>
-            <Button variant="outline" size="sm" className="text-futi-night-blue border-futi-orange hover:bg-futi-orange/10">
+            <Button variant="outline" size="sm" className="text-futi-night-blue border-futi-accent hover:bg-futi-accent/10">
               Télécharger
             </Button>
           </div>

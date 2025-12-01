@@ -42,32 +42,32 @@ const AdminDashboardLayout = () => {
       {/* Sidebar */}
       <aside className="w-72 bg-futi-night-blue text-futi-white p-6 shadow-lg">
         <div className="text-2xl font-bold mb-8">
-          <span className="text-futi-white">Futi</span><span className="text-futi-orange">Coop</span> <span className="text-futi-white">Admin</span>
+          <span className="text-futi-white">Futi</span><span className="text-futi-accent">Coop</span> <span className="text-futi-white">Admin</span>
         </div>
         <nav className="space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
-              className="flex items-center space-x-3 p-3 rounded-md text-futi-white hover:bg-futi-orange hover:text-futi-night-blue transition-colors duration-200"
+              className="flex items-center space-x-3 p-3 rounded-md text-futi-white hover:bg-futi-accent hover:text-futi-night-blue transition-colors duration-200"
             >
               {item.icon}
               <span>{item.name}</span>
             </Link>
           ))}
         </nav>
-        <Separator className="my-6 bg-futi-orange/30" />
+        <Separator className="my-6 bg-futi-accent/30" />
         <div className="space-y-2">
           <Link
             to="/admin/dashboard/settings"
-            className="flex items-center space-x-3 p-3 rounded-md text-futi-white hover:bg-futi-orange hover:text-futi-night-blue transition-colors duration-200"
+            className="flex items-center space-x-3 p-3 rounded-md text-futi-white hover:bg-futi-accent hover:text-futi-night-blue transition-colors duration-200"
           >
             <Settings className="h-5 w-5" />
             <span>Paramètres</span>
           </Link>
           <Button
             variant="ghost"
-            className="w-full flex justify-start items-center space-x-3 p-3 text-futi-white hover:bg-futi-orange hover:text-futi-night-blue transition-colors duration-200"
+            className="w-full flex justify-start items-center space-x-3 p-3 text-futi-white hover:bg-futi-accent hover:text-futi-night-blue transition-colors duration-200"
             onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />

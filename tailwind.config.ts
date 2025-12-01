@@ -64,7 +64,7 @@ export default {
         },
         // FutiCoop Custom Colors
         'futi-night-blue': '#0A1931', // A deep, dark blue
-        'futi-orange': '#FF7F00',     // A vibrant orange (new accent color)
+        'futi-accent': '#E6B800',     // A vibrant gold (new accent color)
         'futi-white': '#FFFFFF',     // Pure white
       },
       borderRadius: {
