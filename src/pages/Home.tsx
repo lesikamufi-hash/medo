@@ -41,12 +41,12 @@ const Home = () => {
   return (
     <div className="bg-futi-white">
       {/* Hero Section */}
-      <section className="relative text-futi-white py-20 md:py-32 overflow-hidden">
+      <section className="relative text-futi-white py-20 md:py-32 overflow-hidden min-h-[60vh] flex items-center justify-center"> {/* Ajout de min-h-[60vh] et flex pour centrer */}
         <ImageCarousel images={heroImages} />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-futi-night-blue opacity-70 z-10"></div> {/* Ajout de z-10 ici */}
+        <div className="absolute inset-0 bg-futi-night-blue opacity-70 z-10"></div>
 
-        <div className="container mx-auto text-center relative z-20"> {/* Augmentation du z-index pour le contenu textuel */}
+        <div className="container mx-auto text-center relative z-20">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight animate-fade-in-up">
             <span className="text-futi-accent">FutiCoop</span> : Sécurité — Rentabilité — Confiance
           </h1>
