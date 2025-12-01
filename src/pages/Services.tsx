@@ -82,7 +82,10 @@ const Services = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {serviceList.map((service, index) => (
-            <Card key={index} className="bg-futi-white shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20">
+            <Card 
+              key={index} 
+              className="bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20 text-futi-white" // Added text-futi-white for better contrast
+            >
               <CardHeader className="flex flex-row items-center space-x-4">
                 <div className="p-3 bg-futi-night-blue rounded-full">
                   {service.icon}
