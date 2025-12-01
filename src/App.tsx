@@ -80,12 +80,13 @@ const App = () => (
             </Route>
 
             {/* Admin Back-Office Routes (Protected - Placeholder for admin role check) */}
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} /> {/* Redirection ajoutée ici */}
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboardLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="owners" element={<AdminOwners />} />
               <Route path="drivers" element={<AdminDrivers />} />
               <Route path="vehicles" element={<AdminVehicles />} />
-              <Route path="planning" element={<AdminPlanning />} /> {/* Correction appliquée ici */}
+              <Route path="planning" element={<AdminPlanning />} />
               <Route path="finance" element={<AdminFinance />} />
               <Route path="notifications" element={<AdminNotifications />} />
               {/* Add other admin dashboard routes here */}
