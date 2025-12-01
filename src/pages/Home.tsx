@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Car, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ImageCarousel from '@/components/ImageCarousel'; // Réactivé l'importation du carrousel
+import ImageCarousel from '@/components/ImageCarousel';
 
 const services = [
   {
@@ -29,7 +29,7 @@ const services = [
 ];
 
 const Home = () => {
-  const heroImages = [ // Réactivé les images pour le carrousel
+  const heroImages = [
     '/aston-martin-black-car.jpg',
     '/car-background.jpg',
     '/driver-background.jpg',
@@ -42,11 +42,11 @@ const Home = () => {
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section className="relative text-futi-white py-20 md:py-32 overflow-hidden">
-        <ImageCarousel images={heroImages} /> {/* Réactivé le carrousel */}
+        <ImageCarousel images={heroImages} />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
+        <div className="absolute inset-0 bg-futi-night-blue opacity-70 z-10"></div> {/* Ajout de z-10 ici */}
 
-        <div className="container mx-auto text-center relative z-10">
+        <div className="container mx-auto text-center relative z-20"> {/* Augmentation du z-index pour le contenu textuel */}
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight animate-fade-in-up">
             <span className="text-futi-accent">FutiCoop</span> : Sécurité — Rentabilité — Confiance
           </h1>
@@ -62,12 +62,12 @@ const Home = () => {
       </section>
 
       {/* Services Keys Section */}
-      <section className="py-16 md:py-24 bg-futi-night-blue text-futi-white"> {/* Changé le fond en futi-night-blue */}
+      <section className="py-16 md:py-24 bg-futi-night-blue text-futi-white">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-futi-accent mb-12">Nos Services Clés</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="bg-futi-white/10 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20 text-futi-white"> {/* Ajusté le fond des cartes */}
+              <Card key={index} className="bg-futi-white/10 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20 text-futi-white">
                 <CardHeader className="flex flex-col items-center text-center">
                   <div className="p-4 bg-futi-night-blue rounded-full mb-4">
                     {service.icon}
@@ -84,21 +84,21 @@ const Home = () => {
       </section>
 
       {/* Why Choose FutiCoop Section */}
-      <section className="py-16 md:py-24 bg-futi-white text-futi-night-blue"> {/* Gardé cette section claire pour le contraste */}
+      <section className="py-16 md:py-24 bg-futi-white text-futi-night-blue">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-futi-night-blue mb-12">Pourquoi choisir FutiCoop ?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20"> {/* Changé le fond des cartes */}
+            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20">
               <ShieldCheck className="h-10 w-10 text-futi-accent mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Sécurité Maximale</h3>
               <p className="text-futi-white/80">Nous assurons la protection et la gestion rigoureuse de votre véhicule.</p>
             </div>
-            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20"> {/* Changé le fond des cartes */}
+            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20">
               <TrendingUp className="h-10 w-10 text-futi-accent mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Rentabilité Optimale</h3>
               <p className="text-futi-white/80">Transformez votre véhicule en une source de revenus stable et croissante.</p>
             </div>
-            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20"> {/* Changé le fond des cartes */}
+            <div className="p-6 bg-futi-night-blue text-futi-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20">
               <Users className="h-10 w-10 text-futi-accent mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Confiance et Transparence</h3>
               <p className="text-futi-white/80">Un partenariat basé sur la clarté, la discipline et la communication.</p>

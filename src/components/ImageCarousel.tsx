@@ -11,6 +11,11 @@ interface ImageCarouselProps {
 }
 
 const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
+  // Ajout d'un console.log pour vérifier les images reçues
+  useEffect(() => {
+    console.log("ImageCarousel received images:", images);
+  }, [images]);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
@@ -38,7 +43,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
   }, [emblaApi, setScrollSnaps, onSelect]);
 
   return (
-    <div className={cn("embla absolute inset-0", className)}>
+    <div className={cn("embla absolute inset-0 z-0", className)}> {/* Ajout de z-0 ici */}
       <div className="embla__viewport h-full w-full" ref={emblaRef}>
         <div className="embla__container h-full">
           {images.map((image, index) => (
