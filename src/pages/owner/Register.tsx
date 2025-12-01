@@ -1,16 +1,69 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 
 const OwnerRegister = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      showError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    setLoading(true);
+    const toastId = showLoading("Inscription en cours...");
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phone, // Supabase auth.users doesn't have a direct phone field, but can be stored in user_metadata
+          },
+          emailRedirectTo: `${window.location.origin}/owner/login`, // Redirect after email confirmation
+        },
+      });
+
+      if (error) {
+        showError(error.message);
+      } else if (data.user) {
+        showSuccess("Inscription réussie ! Veuillez vérifier votre e-mail pour confirmer votre compte.");
+        navigate('/owner/login'); // Redirect to login page after successful signup
+      } else if (data.session === null && data.user === null) {
+        // This case happens when email confirmation is required
+        showSuccess("Inscription réussie ! Veuillez vérifier votre e-mail pour confirmer votre compte.");
+        navigate('/owner/login');
+      }
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      dismissToast(toastId);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-50" // Increased opacity
+        className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{ backgroundImage: "url('/driver-background.jpg')" }}
       ></div>
       {/* Dark overlay for contrast */}
@@ -26,16 +79,32 @@ const OwnerRegister = () => {
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6">
+          <form className="mt-8 space-y-6" onSubmit={handleRegister}>
             <div>
-              <Label htmlFor="name" className="sr-only">Nom complet</Label>
+              <Label htmlFor="firstName" className="sr-only">Prénom</Label>
               <Input
-                id="name"
-                name="name"
+                id="firstName"
+                name="firstName"
                 type="text"
-                autoComplete="name"
+                autoComplete="given-name"
                 required
-                placeholder="Nom complet"
+                placeholder="Prénom"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="lastName" className="sr-only">Nom de famille</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                required
+                placeholder="Nom de famille"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -48,6 +117,8 @@ const OwnerRegister = () => {
                 autoComplete="tel"
                 required
                 placeholder="Numéro de téléphone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -60,6 +131,8 @@ const OwnerRegister = () => {
                 autoComplete="email"
                 required
                 placeholder="Adresse e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -72,6 +145,8 @@ const OwnerRegister = () => {
                 autoComplete="new-password"
                 required
                 placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -84,6 +159,8 @@ const OwnerRegister = () => {
                 autoComplete="new-password"
                 required
                 placeholder="Confirmer le mot de passe"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -92,8 +169,9 @@ const OwnerRegister = () => {
               <Button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-orange hover:bg-futi-orange/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-orange"
+                disabled={loading}
               >
-                S'inscrire
+                {loading ? "Inscription..." : "S'inscrire"}
               </Button>
             </div>
           </form>

@@ -2,31 +2,54 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout"; // Import the new Layout component
-import Home from "./pages/Home"; // Import the new Home page
-import About from "./pages/About"; // Import the new About page
-import Services from "./pages/Services"; // Import the new Services page
-import Contact from "./pages/Contact"; // Import the new Contact page
-import OwnerLogin from "./pages/owner/Login"; // Import Owner Login
-import OwnerRegister from "./pages/owner/Register"; // Import Owner Register
-import OwnerDashboardLayout from "./pages/owner/DashboardLayout"; // Import Owner Dashboard Layout
-import OwnerDashboard from "./pages/owner/Dashboard"; // Import Owner Dashboard
-import OwnerVehicles from "./pages/owner/Vehicles"; // Import Owner Vehicles
-import OwnerMaintenance from "./pages/owner/Maintenance"; // Import Owner Maintenance
-import OwnerPlanning from "./pages/owner/Planning"; // Import Owner Planning
-import OwnerReports from "./pages/owner/Reports"; // Import Owner Reports
-import AdminDashboardLayout from "./pages/admin/AdminDashboardLayout"; // Import Admin Dashboard Layout
-import AdminDashboard from "./pages/admin/Dashboard"; // Import Admin Dashboard
-import AdminOwners from "./pages/admin/Owners"; // Import Admin Owners
-import AdminDrivers from "./pages/admin/Drivers"; // Import Admin Drivers
-import AdminVehicles from "./pages/admin/Vehicles"; // Import Admin Vehicles
-import AdminPlanning from "./pages/admin/Planning"; // Import Admin Planning
-import AdminFinance from "./pages/admin/Finance"; // Import Admin Finance
-import AdminNotifications from "./pages/admin/Notifications"; // Import Admin Notifications
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Services from "./pages/Services";
+import Contact from "./pages/Contact";
+import OwnerLogin from "./pages/owner/Login";
+import OwnerRegister from "./pages/owner/Register";
+import OwnerDashboardLayout from "./pages/owner/DashboardLayout";
+import OwnerDashboard from "./pages/owner/Dashboard";
+import OwnerVehicles from "./pages/owner/Vehicles";
+import OwnerMaintenance from "./pages/owner/Maintenance";
+import OwnerPlanning from "./pages/owner/Planning";
+import OwnerReports from "./pages/owner/Reports";
+import AdminDashboardLayout from "./pages/admin/AdminDashboardLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminOwners from "./pages/admin/Owners";
+import AdminDrivers from "./pages/admin/Drivers";
+import AdminVehicles from "./pages/admin/Vehicles";
+import AdminPlanning from "./pages/admin/Planning";
+import AdminFinance from "./pages/admin/Finance";
+import AdminNotifications from "./pages/admin/Notifications";
 import NotFound from "./pages/NotFound";
+import { SessionContextProvider, useSession } from "./components/SessionContextProvider"; // Import SessionContextProvider and useSession
 
 const queryClient = new QueryClient();
+
+// ProtectedRoute component
+const ProtectedRoute: React.FC<{ children: React.ReactNode, roles?: string[] }> = ({ children, roles }) => {
+  const { user, isLoading } = useSession();
+
+  if (isLoading) {
+    return <div>Chargement de l'authentification...</div>; // Or a spinner component
+  }
+
+  if (!user) {
+    return <Navigate to="/owner/login" replace />;
+  }
+
+  // Basic role check (can be expanded with actual role management from profiles table)
+  // For now, we'll assume any authenticated user can access owner dashboard
+  // and we'll need more logic for admin roles later.
+  if (roles && roles.includes('admin') && user.email !== 'admin@example.com') { // Placeholder for admin check
+    return <Navigate to="/owner/dashboard" replace />; // Redirect non-admins
+  }
+
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,42 +57,44 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Public Pages with Layout */}
-          <Route path="/" element={<Layout><Home /></Layout>} />
-          <Route path="/about" element={<Layout><About /></Layout>} />
-          <Route path="/services" element={<Layout><Services /></Layout>} />
-          <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        <SessionContextProvider> {/* Wrap the entire app with SessionContextProvider */}
+          <Routes>
+            {/* Public Pages with Layout */}
+            <Route path="/" element={<Layout><Home /></Layout>} />
+            <Route path="/about" element={<Layout><About /></Layout>} />
+            <Route path="/services" element={<Layout><Services /></Layout>} />
+            <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
-          {/* Owner Authentication */}
-          <Route path="/owner/login" element={<OwnerLogin />} />
-          <Route path="/owner/register" element={<OwnerRegister />} />
+            {/* Owner Authentication */}
+            <Route path="/owner/login" element={<OwnerLogin />} />
+            <Route path="/owner/register" element={<OwnerRegister />} />
 
-          {/* Owner Dashboard Routes */}
-          <Route path="/owner/dashboard" element={<OwnerDashboardLayout />}>
-            <Route index element={<OwnerDashboard />} />
-            <Route path="vehicles" element={<OwnerVehicles />} />
-            <Route path="maintenance" element={<OwnerMaintenance />} />
-            <Route path="planning" element={<OwnerPlanning />} />
-            <Route path="reports" element={<OwnerReports />} />
-            {/* Add other owner dashboard routes here */}
-          </Route>
+            {/* Owner Dashboard Routes (Protected) */}
+            <Route path="/owner/dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
+              <Route index element={<OwnerDashboard />} />
+              <Route path="vehicles" element={<OwnerVehicles />} />
+              <Route path="maintenance" element={<OwnerMaintenance />} />
+              <Route path="planning" element={<OwnerPlanning />} />
+              <Route path="reports" element={<OwnerReports />} />
+              {/* Add other owner dashboard routes here */}
+            </Route>
 
-          {/* Admin Back-Office Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="owners" element={<AdminOwners />} />
-            <Route path="drivers" element={<AdminDrivers />} />
-            <Route path="vehicles" element={<AdminVehicles />} />
-            <Route path="planning" element={<AdminPlanning />} />
-            <Route path="finance" element={<AdminFinance />} />
-            <Route path="notifications" element={<AdminNotifications />} />
-            {/* Add other admin dashboard routes here */}
-          </Route>
+            {/* Admin Back-Office Routes (Protected - Placeholder for admin role check) */}
+            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboardLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="owners" element={<AdminOwners />} />
+              <Route path="drivers" element={<AdminDrivers />} />
+              <Route path="vehicles" element={<AdminVehicles />} />
+              <Route path="planning" element={<AdminPlanning />} />
+              <Route path="finance" element={<AdminFinance />} />
+              <Route path="notifications" element={<AdminNotifications />} />
+              {/* Add other admin dashboard routes here */}
+            </Route>
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </SessionContextProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

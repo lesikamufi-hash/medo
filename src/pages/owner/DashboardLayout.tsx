@@ -1,11 +1,15 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Car, DollarSign, Wrench, Calendar, FileText, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 
 const OwnerDashboardLayout = () => {
+  const navigate = useNavigate();
+
   const navItems = [
     { name: "Tableau de bord", path: "/owner/dashboard", icon: <DollarSign className="h-5 w-5" /> },
     { name: "Mes Véhicules", path: "/owner/dashboard/vehicles", icon: <Car className="h-5 w-5" /> },
@@ -13,6 +17,23 @@ const OwnerDashboardLayout = () => {
     { name: "Planning Chauffeur", path: "/owner/dashboard/planning", icon: <Calendar className="h-5 w-5" /> },
     { name: "Rapports", path: "/owner/dashboard/reports", icon: <FileText className="h-5 w-5" /> },
   ];
+
+  const handleLogout = async () => {
+    const toastId = showLoading("Déconnexion en cours...");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Vous avez été déconnecté.");
+        navigate('/owner/login');
+      }
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      dismissToast(toastId);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -43,7 +64,7 @@ const OwnerDashboardLayout = () => {
           <Button
             variant="ghost"
             className="w-full flex justify-start items-center space-x-3 p-3 text-futi-white hover:bg-futi-orange hover:text-futi-night-blue transition-colors duration-200"
-            onClick={() => console.log("Déconnexion")} // Placeholder for logout logic
+            onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />
             <span>Déconnexion</span>

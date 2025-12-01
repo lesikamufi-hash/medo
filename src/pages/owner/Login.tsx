@@ -1,16 +1,48 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 
 const OwnerLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const toastId = showLoading("Connexion en cours...");
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Connexion réussie ! Redirection vers votre tableau de bord.");
+        navigate('/owner/dashboard'); // Redirect to dashboard on successful login
+      }
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      dismissToast(toastId);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-50" // Increased opacity
+        className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{ backgroundImage: "url('/driver-background.jpg')" }}
       ></div>
       {/* Dark overlay for contrast */}
@@ -26,7 +58,7 @@ const OwnerLogin = () => {
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6">
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
               <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
               <Input
@@ -36,6 +68,8 @@ const OwnerLogin = () => {
                 autoComplete="email"
                 required
                 placeholder="Adresse e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -48,6 +82,8 @@ const OwnerLogin = () => {
                 autoComplete="current-password"
                 required
                 placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-orange/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-orange focus:border-futi-orange sm:text-sm"
               />
             </div>
@@ -64,8 +100,9 @@ const OwnerLogin = () => {
               <Button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-orange hover:bg-futi-orange/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-orange"
+                disabled={loading}
               >
-                Se connecter
+                {loading ? "Connexion..." : "Se connecter"}
               </Button>
             </div>
           </form>
