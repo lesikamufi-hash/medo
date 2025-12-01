@@ -76,6 +76,7 @@ serve(async (req) => {
           id,
           first_name,
           last_name,
+          username, -- Include username
           role:roles(name)
         `)
 
@@ -125,8 +126,6 @@ serve(async (req) => {
         status: 200,
       })
     }
-
-    // Removed the 'create' endpoint for adding users via magic link
 
     if (req.method === 'DELETE' && pathSegments.includes('manage-users') && pathSegments.length === 4) {
       const userIdToDelete = pathSegments[3]

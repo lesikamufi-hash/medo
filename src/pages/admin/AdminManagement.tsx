@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { UserMinus, Trash2 } from 'lucide-react'; // Removed UserPlus
+import { UserMinus, Trash2 } from 'lucide-react';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -13,6 +13,7 @@ interface UserProfile {
   email: string;
   first_name: string;
   last_name: string;
+  username: string; // Added username
   role: { name: string };
   created_at: string;
 }
@@ -20,7 +21,6 @@ interface UserProfile {
 const AdminManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  // Removed isDialogOpen and form states for adding user, and Dialog components
 
   const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/manage-users`;
 
@@ -144,7 +144,6 @@ const AdminManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-futi-night-blue">Gestion des Utilisateurs</h2>
-        {/* Removed "Ajouter un utilisateur" button and dialog */}
       </div>
 
       <Card className="shadow-md border-futi-accent/20">
@@ -161,6 +160,7 @@ const AdminManagement = () => {
                   <TableHead className="text-futi-night-blue">Email</TableHead>
                   <TableHead className="text-futi-night-blue">Prénom</TableHead>
                   <TableHead className="text-futi-night-blue">Nom</TableHead>
+                  <TableHead className="text-futi-night-blue">Nom d'utilisateur</TableHead> {/* New column header */}
                   <TableHead className="text-futi-night-blue">Rôle</TableHead>
                   <TableHead className="text-futi-night-blue text-right">Actions</TableHead>
                 </TableRow>
@@ -171,6 +171,7 @@ const AdminManagement = () => {
                     <TableCell className="font-medium">{user.email}</TableCell>
                     <TableCell>{user.first_name}</TableCell>
                     <TableCell>{user.last_name}</TableCell>
+                    <TableCell>{user.username || 'N/A'}</TableCell> {/* Display username */}
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         user.role?.name === 'admin' ? 'bg-blue-100 text-blue-800' :

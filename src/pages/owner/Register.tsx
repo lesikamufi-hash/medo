@@ -13,6 +13,7 @@ import { useSession } from '@/components/SessionContextProvider';
 const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState(''); // New state for username
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -52,6 +53,7 @@ const OwnerRegister = () => {
           data: {
             first_name: firstName,
             last_name: lastName,
+            username: username, // Pass username to Supabase metadata
             initial_role_id: 'owner', // This will be handled by the handle_new_user trigger
           },
         },
@@ -117,6 +119,20 @@ const OwnerRegister = () => {
                 placeholder="Nom de famille"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="username" className="sr-only">Nom d'utilisateur</Label>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                placeholder="Nom d'utilisateur"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>

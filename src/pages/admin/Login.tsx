@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/components/SessionContextProvider';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState(''); // Can be email or username
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,8 +33,32 @@ const AdminLogin = () => {
     const toastId = showLoading("Connexion Admin en cours...");
 
     try {
+      let emailToLogin = identifier;
+
+      // Check if the identifier is likely an email
+      if (!identifier.includes('@')) {
+        // If not an email, assume it's a username and try to find the associated email
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id') // We only need the user ID to then get the email from auth.users
+          .eq('username', identifier)
+          .single();
+
+        if (error || !data) {
+          throw new Error("Nom d'utilisateur introuvable ou erreur de base de données.");
+        }
+        
+        // Now get the email from auth.users using the profile ID
+        const { data: authUserData, error: authUserError } = await supabase.auth.admin.getUserById(data.id);
+
+        if (authUserError || !authUserData?.user?.email) {
+          throw new Error("Impossible de récupérer l'e-mail associé au nom d'utilisateur.");
+        }
+        emailToLogin = authUserData.user.email;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email: email,
+        email: emailToLogin,
         password: password,
       });
 
@@ -74,16 +98,16 @@ const AdminLogin = () => {
         <CardContent>
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
-              <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
+              <Label htmlFor="identifier" className="sr-only">E-mail ou Nom d'utilisateur</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="identifier"
+                name="identifier"
+                type="text" // Changed to text to accept username
+                autoComplete="username email"
                 required
-                placeholder="Adresse e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-mail ou Nom d'utilisateur"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
