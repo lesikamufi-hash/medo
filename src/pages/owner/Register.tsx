@@ -64,7 +64,7 @@ const OwnerRegister = () => {
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-50"
-        style={{ backgroundImage: "url('/driver-background.jpg')" }}
+        style={{ backgroundImage: "url('/moto-cool-a-l-interieur.jpg')" }}
       ></div>
       {/* Dark overlay for contrast */}
       <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
