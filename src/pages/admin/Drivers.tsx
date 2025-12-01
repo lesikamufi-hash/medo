@@ -73,9 +73,8 @@ const AdminDrivers = () => {
                 ))}
               </TableBody>
             </Table>
-          </Table>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
