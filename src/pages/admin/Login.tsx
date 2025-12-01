@@ -13,20 +13,20 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, isLoading: isSessionLoading } = useSession();
+  const { user: sessionUser, isLoading: isSessionLoading } = useSession(); // Renommé pour éviter les conflits
 
   useEffect(() => {
-    console.log("AdminLogin useEffect: isSessionLoading:", isSessionLoading, "user:", user);
-    if (!isSessionLoading && user) {
-      if (user.role === 'admin') {
-        console.log("AdminLogin: Admin user detected, redirecting to /admin/dashboard");
+    console.log("AdminLogin useEffect (from SessionContext): isSessionLoading:", isSessionLoading, "sessionUser:", sessionUser);
+    if (!isSessionLoading && sessionUser) {
+      if (sessionUser.role === 'admin') {
+        console.log("AdminLogin useEffect: Admin user detected from SessionContext, redirecting to /admin/dashboard");
         navigate('/admin/dashboard', { replace: true });
       } else {
-        console.log("AdminLogin: Non-admin user detected, redirecting to /");
+        console.log("AdminLogin useEffect: Non-admin user detected from SessionContext, redirecting to /");
         navigate('/', { replace: true }); // Redirect non-admin logged-in users away
       }
     }
-  }, [user, isSessionLoading, navigate]);
+  }, [sessionUser, isSessionLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ const AdminLogin = () => {
     const toastId = showLoading("Connexion Admin en cours...");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -43,17 +43,46 @@ const AdminLogin = () => {
       if (error) {
         console.error("AdminLogin: Supabase signInWithPassword error:", error.message);
         showError(error.message);
+      } else if (data.user) {
+        console.log("AdminLogin: Supabase signInWithPassword successful. User data:", data.user);
+
+        // Explicitly fetch user role immediately after successful login
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role:roles(name)')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("AdminLogin: Error fetching user profile/role after login:", profileError.message);
+          showError("Erreur lors de la récupération du profil utilisateur.");
+          await supabase.auth.signOut(); // Sign out if role cannot be fetched
+          navigate('/admin', { replace: true });
+          return;
+        }
+
+        const userRole = profileData?.role?.name;
+        console.log("AdminLogin: Fetched user role directly:", userRole);
+
+        if (userRole === 'admin') {
+          showSuccess("Connexion Admin réussie ! Redirection vers le tableau de bord.");
+          navigate('/admin/dashboard', { replace: true }); // Direct navigation for admin
+        } else {
+          showError("Accès refusé : Vous n'avez pas les privilèges d'administrateur.");
+          await supabase.auth.signOut(); // Sign out if not an admin
+          navigate('/admin', { replace: true });
+        }
       } else {
-        console.log("AdminLogin: Supabase signInWithPassword successful. Waiting for session context to update.");
-        showSuccess("Connexion réussie ! Vérification du rôle...");
-        // The SessionContextProvider's onAuthStateChange will handle the redirection
+        // This case might happen if email confirmation is required but no user/session is returned immediately
+        console.log("AdminLogin: signInWithPassword returned no user/session, possibly awaiting email confirmation.");
+        showError("Connexion échouée ou confirmation d'e-mail requise.");
       }
     } catch (error: any) {
       console.error("AdminLogin: Unexpected error during login:", error);
       showError("Une erreur inattendue est survenue lors de la connexion.");
     } finally {
       console.log("AdminLogin: Login process finished, dismissing toast and setting loading to false.");
-      dismissToast(toastId); // Assurez-vous que ce toast est bien fermé
+      dismissToast(toastId);
       setLoading(false);
     }
   };
