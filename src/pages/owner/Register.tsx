@@ -37,19 +37,25 @@ const OwnerRegister = () => {
             last_name: lastName,
             phone_number: phone,
           },
-          emailRedirectTo: `${window.location.origin}/owner/login`, // Redirect after email confirmation
+          // emailRedirectTo est supprimé car la confirmation par e-mail est désactivée
         },
       });
 
       if (error) {
         console.error("Register: Supabase signUp error:", error.message);
         showError(error.message);
+      } else if (data.user) {
+        // Si la confirmation par e-mail est désactivée, l'utilisateur est directement connecté
+        console.log("Register: Supabase signUp successful and user logged in. Data:", data);
+        showSuccess("Inscription réussie ! Redirection vers votre tableau de bord.");
+        console.log("Register: Navigating to /owner/dashboard");
+        navigate('/owner/dashboard'); // Rediriger directement vers le tableau de bord
       } else {
-        // If no error, signup was initiated. User needs to confirm email.
-        console.log("Register: Supabase signUp successful. Data:", data);
-        showSuccess("Inscription réussie ! Veuillez vérifier votre e-mail pour confirmer votre compte.");
-        console.log("Register: Navigating to /owner/login");
-        navigate('/owner/login'); // Always redirect to login page after successful signup initiation
+        // Ce cas ne devrait pas se produire si la confirmation par e-mail est désactivée
+        // mais on le garde pour une robustesse générale.
+        console.log("Register: signUp returned no user, but no error. This might indicate an unexpected state.");
+        showError("Inscription réussie, mais connexion automatique échouée. Veuillez essayer de vous connecter.");
+        navigate('/owner/login');
       }
     } catch (error: any) {
       console.error("Register: Unexpected error during signup:", error);
