@@ -61,7 +61,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true }}> {/* Added future flag here */}
         <SessionContextProvider>
           <Routes>
             {/* Public Pages with Layout */}
