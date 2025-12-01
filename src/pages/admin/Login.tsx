@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,14 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Rediriger vers le tableau de bord si l'administrateur est déjà connecté
+  useEffect(() => {
+    const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+    if (isAdminLoggedIn) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +30,7 @@ const AdminLogin = () => {
       if (username === "Hermes" && password === "Zumr") {
         localStorage.setItem('isAdminLoggedIn', 'true'); // Store a flag in local storage
         showSuccess("Connexion Admin réussie ! Redirection vers le tableau de bord.");
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true }); // Use replace: true here
       } else {
         showError("Nom d'utilisateur ou mot de passe incorrect.");
       }
