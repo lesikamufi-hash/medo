@@ -10,7 +10,7 @@ const OwnerRegister = () => {
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20" // Subtle opacity
+        className="absolute inset-0 bg-cover bg-center opacity-50" // Increased opacity
         style={{ backgroundImage: "url('/driver-background.jpg')" }}
       ></div>
       {/* Dark overlay for contrast */}

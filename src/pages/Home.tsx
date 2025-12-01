@@ -31,7 +31,7 @@ const Home = () => {
   return (
     <div className="bg-futi-white">
       {/* Hero Section */}
-      <section className="relative bg-futi-night-blue text-futi-white py-20 md:py-32 overflow-hidden">
+      <section className="relative text-futi-white py-20 md:py-32 overflow-hidden">
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
