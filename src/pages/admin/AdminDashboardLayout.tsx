@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { Users, Car, Calendar, DollarSign, BarChart2, BellRing, Settings, LogOut, UserCog, UserCheck } from 'lucide-react'; // Added UserCheck icon
+import { Users, Car, Calendar, DollarSign, BarChart2, BellRing, Settings, LogOut, UserCog, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Card } from '@/components/ui/card';
-// import { supabase } from '@/integrations/supabase/client'; // No longer needed for custom admin logout
+import { supabase } from '@/integrations/supabase/client'; // Import supabase client
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 
 const AdminDashboardLayout = () => {
@@ -12,7 +11,7 @@ const AdminDashboardLayout = () => {
 
   const navItems = [
     { name: "Tableau de bord", path: "/admin/dashboard", icon: <BarChart2 className="h-5 w-5" /> },
-    { name: "Gestion Utilisateurs", path: "/admin/dashboard/users", icon: <UserCheck className="h-5 w-5" /> }, // New item
+    { name: "Gestion Utilisateurs", path: "/admin/dashboard/users", icon: <UserCheck className="h-5 w-5" /> },
     { name: "Gestion Propriétaires", path: "/admin/dashboard/owners", icon: <Users className="h-5 w-5" /> },
     { name: "Gestion Chauffeurs", path: "/admin/dashboard/drivers", icon: <UserCog className="h-5 w-5" /> },
     { name: "Suivi Véhicules", path: "/admin/dashboard/vehicles", icon: <Car className="h-5 w-5" /> },
@@ -24,9 +23,13 @@ const AdminDashboardLayout = () => {
   const handleLogout = async () => {
     const toastId = showLoading("Déconnexion Admin en cours...");
     try {
-      localStorage.removeItem('isAdminLoggedIn'); // Clear the admin login flag
-      showSuccess("Vous avez été déconnecté de l'administration.");
-      navigate('/admin'); // Redirect to the custom admin login page
+      const { error } = await supabase.auth.signOut(); // Sign out from Supabase
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Vous avez été déconnecté de l'administration.");
+        navigate('/admin'); // Redirect to the admin login page
+      }
     } catch (error: any) {
       showError("Une erreur est survenue lors de la déconnexion.");
     } finally {

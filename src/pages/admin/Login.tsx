@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useSession } from '@/components/SessionContextProvider'; // Import useSession
 
 const AdminLogin = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState(''); // Changed from username to email
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user, isLoading: isSessionLoading } = useSession(); // Use session context
 
-  // Rediriger vers le tableau de bord si l'administrateur est déjà connecté
+  // Redirect to dashboard if an admin is already logged in via Supabase session
   useEffect(() => {
-    const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-    if (isAdminLoggedIn) {
+    if (!isSessionLoading && user && user.role === 'admin') {
       navigate('/admin/dashboard', { replace: true });
     }
-  }, [navigate]);
+  }, [user, isSessionLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,16 +28,19 @@ const AdminLogin = () => {
     const toastId = showLoading("Connexion Admin en cours...");
 
     try {
-      // Simulate API call for fixed credentials
-      if (username === "Hermes" && password === "Zumr") {
-        localStorage.setItem('isAdminLoggedIn', 'true'); // Store a flag in local storage
-        showSuccess("Connexion Admin réussie ! Redirection vers le tableau de bord.");
-        navigate('/admin/dashboard', { replace: true }); // Use replace: true here
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        showError(error.message);
       } else {
-        showError("Nom d'utilisateur ou mot de passe incorrect.");
+        // SessionContextProvider will handle fetching the role and redirecting
+        showSuccess("Connexion réussie ! Vérification du rôle...");
       }
     } catch (error: any) {
-      showError("Une erreur inattendue est survenue.");
+      showError("Une erreur inattendue est survenue lors de la connexion.");
     } finally {
       dismissToast(toastId);
       setLoading(false);
@@ -64,16 +69,16 @@ const AdminLogin = () => {
         <CardContent>
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
-              <Label htmlFor="username" className="sr-only">Nom d'utilisateur</Label>
+              <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
               <Input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
+                id="email"
+                name="email"
+                type="email" // Changed type to email
+                autoComplete="email" // Changed autocomplete
                 required
-                placeholder="Nom d'utilisateur"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Adresse e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
               />
             </div>
