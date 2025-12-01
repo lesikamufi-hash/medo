@@ -65,34 +65,35 @@ const Services = () => {
     <div className="relative bg-futi-white py-16 md:py-24 min-h-screen">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center" // Opacité supprimée ici
+        className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg')" }}
       ></div>
-      {/* Dark overlay for contrast - Supprimé */}
+      {/* Dark overlay for contrast */}
+      <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div> {/* Calque sombre réintroduit */}
 
       <div className="container mx-auto px-4 relative z-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-center text-futi-white mb-16"> {/* Titre principal en blanc */}
+        <h1 className="text-4xl md:text-5xl font-bold text-center text-futi-white mb-16">
           Nos <span className="text-futi-accent">Services</span>
         </h1>
 
-        <p className="text-center text-lg md:text-xl text-futi-white max-w-3xl mx-auto mb-12"> {/* Texte introductif en blanc */}
+        <p className="text-center text-lg md:text-xl text-futi-white max-w-3xl mx-auto mb-12">
           Découvrez comment FutiCoop peut transformer la gestion de votre véhicule en un véritable actif rentable et sécurisé. Nous offrons une gamme complète de services adaptés à vos besoins.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {serviceList.map((service, index) => (
-            <Card 
-              key={index} 
-              className="bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20" 
+            <Card
+              key={index}
+              className="bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow duration-300 border-futi-accent/20"
             >
               <CardHeader className="flex flex-row items-center space-x-4">
                 <div className="p-3 bg-futi-night-blue rounded-full">
                   {service.icon}
                 </div>
-                <CardTitle className="text-xl font-semibold text-futi-white">{service.title}</CardTitle> {/* Titre de la carte en blanc */}
+                <CardTitle className="text-xl font-semibold text-futi-white">{service.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-futi-white">{service.description}</p> {/* Description de la carte en blanc */}
+                <p className="text-futi-white">{service.description}</p>
               </CardContent>
             </Card>
           ))}
