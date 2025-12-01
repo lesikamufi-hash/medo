@@ -41,6 +41,9 @@ const OwnerRegister = () => {
         },
       });
 
+      // Log the Supabase response for debugging
+      console.log("Supabase signUp response:", { data, error });
+
       if (error) {
         showError(error.message);
       } else if (data.user) {
