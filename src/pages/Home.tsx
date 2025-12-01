@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Car, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// import ImageCarousel from '@/components/ImageCarousel'; // Supprimé l'importation du carrousel
 
 const services = [
   {
@@ -29,23 +28,13 @@ const services = [
 ];
 
 const Home = () => {
-  // const heroImages = [ // Supprimé les images pour le carrousel
-  //   '/aston-martin-black-car.jpg',
-  //   '/car-background.jpg',
-  //   '/driver-background.jpg',
-  //   '/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg',
-  //   '/moto-cool-a-l-interieur.jpg',
-  //   '/Aston-Martin-Black-Car-Dark-iphone-8.jpg',
-  // ];
-
   return (
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section 
-        className="relative text-futi-white py-20 md:py-32 overflow-hidden min-h-[60vh] flex items-center justify-center bg-cover bg-center bg-fixed" {/* Ajout de bg-fixed ici */}
-        style={{ backgroundImage: "url('/aston-martin-black-car-dark.jpg')" }} // Nouvelle image de fond statique
+        className="relative text-futi-white py-20 md:py-32 overflow-hidden min-h-[60vh] flex items-center justify-center bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: "url('/aston-martin-black-car-dark.jpg')" }}
       >
-        {/* <ImageCarousel images={heroImages} /> */} {/* Supprimé le carrousel */}
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-futi-night-blue opacity-70 z-10"></div>
 
