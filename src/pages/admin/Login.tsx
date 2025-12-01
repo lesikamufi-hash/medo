@@ -8,9 +8,22 @@ import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast
 import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/components/SessionContextProvider';
 
+// Helper function to format phone number to E.164
+const formatPhoneNumber = (phone: string) => {
+  // Remove all non-digit characters
+  const digitsOnly = phone.replace(/\D/g, '');
+  // Ensure it starts with a '+' and includes country code.
+  // For simplicity, assuming +243 for Congo if not already present.
+  if (!digitsOnly.startsWith('243') && digitsOnly.length > 0) {
+    return `+243${digitsOnly}`;
+  }
+  return `+${digitsOnly}`;
+};
+
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
@@ -20,39 +33,58 @@ const AdminLogin = () => {
       if (sessionUser.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
       } else {
-        // Redirect non-admin logged-in users away from admin login
         navigate('/', { replace: true });
       }
     }
   }, [sessionUser, isSessionLoading, navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = showLoading("Connexion Admin en cours...");
+    const toastId = showLoading("Envoi du code OTP Admin...");
+    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formattedPhoneNumber,
       });
 
       if (error) {
-        console.error("AdminLogin: Supabase signInWithPassword error:", error.message);
         showError(error.message);
-      } else if (data.user) {
-        console.log("AdminLogin: Supabase signInWithPassword successful. User data:", data.user);
-        showSuccess("Connexion réussie ! Vérification des privilèges...");
-        // The SessionContextProvider's onAuthStateChange will now fetch the role and handle navigation
       } else {
-        console.log("AdminLogin: signInWithPassword returned no user/session, possibly awaiting email confirmation.");
-        showError("Connexion échouée ou confirmation d'e-mail requise.");
+        showSuccess("Code OTP envoyé à votre numéro de téléphone Admin !");
+        setOtpSent(true);
       }
     } catch (error: any) {
-      console.error("AdminLogin: Unexpected error during login:", error);
-      showError("Une erreur inattendue est survenue lors de la connexion.");
+      showError(error.message);
     } finally {
-      console.log("AdminLogin: Login process finished, dismissing toast and setting loading to false.");
+      dismissToast(toastId);
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const toastId = showLoading("Vérification du code OTP Admin...");
+    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: formattedPhoneNumber,
+        token: otp,
+        type: 'sms',
+      });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Connexion Admin réussie ! Vérification des privilèges...");
+        // SessionContextProvider will handle navigation
+      }
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
       dismissToast(toastId);
       setLoading(false);
     }
@@ -74,39 +106,42 @@ const AdminLogin = () => {
             Connexion Administrateur
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Accédez au back-office de FutiCoop
+            Accédez au back-office de FutiCoop avec votre numéro de téléphone
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <form className="mt-8 space-y-6" onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
             <div>
-              <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
+              <Label htmlFor="phoneNumber" className="sr-only">Numéro de téléphone</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                autoComplete="tel"
                 required
-                placeholder="Adresse e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Numéro de téléphone (ex: +243837767676)"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                disabled={otpSent}
               />
             </div>
-            <div>
-              <Label htmlFor="password" className="sr-only">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
+
+            {otpSent && (
+              <div>
+                <Label htmlFor="otp" className="sr-only">Code OTP</Label>
+                <Input
+                  id="otp"
+                  name="otp"
+                  type="text"
+                  required
+                  placeholder="Code OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                />
+              </div>
+            )}
 
             <div>
               <Button
@@ -114,7 +149,7 @@ const AdminLogin = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
-                {loading ? "Connexion..." : "Se connecter"}
+                {loading ? (otpSent ? "Vérification..." : "Envoi...") : (otpSent ? "Vérifier le code" : "Envoyer le code OTP")}
               </Button>
             </div>
           </form>

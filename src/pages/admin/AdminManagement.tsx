@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, UserPlus, UserMinus, Trash2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { UserPlus, UserMinus, Trash2 } from 'lucide-react'; // Removed PlusCircle
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client'; // Pour obtenir le jeton JWT
 
@@ -22,14 +18,7 @@ interface UserProfile {
 const AdminManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  // États du formulaire pour l'ajout d'un nouvel utilisateur
-  const [newFirstName, setNewFirstName] = useState('');
-  const [newLastName, setNewLastName] = useState('');
-  const [newEmail, setNewEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newRole, setNewRole] = useState('owner'); // Rôle par défaut pour les nouveaux utilisateurs
+  // Removed isDialogOpen and form states for adding user
 
   // URL de votre fonction Edge (remplacez 'lfmyjpnelfvpgdhfojwt' par votre ID de projet Supabase)
   const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/manage-users`;
@@ -151,105 +140,13 @@ const AdminManagement = () => {
     }
   };
 
-  const handleAddUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const toastId = showLoading("Ajout de l'utilisateur...");
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Aucune session active. Veuillez vous connecter en tant qu'administrateur Supabase.");
-      }
-
-      const response = await fetch(`${EDGE_FUNCTION_URL}/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          email: newEmail,
-          password: newPassword,
-          firstName: newFirstName,
-          lastName: newLastName,
-          roleName: newRole,
-        }),
-      });
-
-      if (!response.ok) {
-        let errorData;
-        try {
-          errorData = await response.json();
-        } catch (jsonError) {
-          throw new Error(`Erreur du serveur (statut ${response.status}): ${response.statusText || 'Réponse non-JSON ou vide'}`);
-        }
-        throw new Error(errorData.error || `Échec de l'ajout de l'utilisateur (statut ${response.status})`);
-      }
-
-      showSuccess("Utilisateur ajouté avec succès !");
-      setIsDialogOpen(false);
-      setNewFirstName('');
-      setNewLastName('');
-      setNewEmail('');
-      setNewPassword('');
-      setNewRole('owner');
-      fetchUsers(); // Actualiser la liste
-    } catch (error: any) {
-      showError(error.message);
-      console.error("Erreur lors de l'ajout de l'utilisateur :", error);
-    } finally {
-      dismissToast(toastId);
-    }
-  };
+  // Removed handleAddUser function
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-futi-night-blue">Gestion des Utilisateurs</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">
-              <PlusCircle className="h-4 w-4 mr-2" /> Ajouter un utilisateur
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] bg-futi-white text-futi-night-blue">
-            <DialogHeader>
-              <DialogTitle className="text-futi-night-blue">Ajouter un nouvel utilisateur</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleAddUser} className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="firstName" className="text-right">Prénom</Label>
-                <Input id="firstName" value={newFirstName} onChange={(e) => setNewFirstName(e.target.value)} className="col-span-3 border-futi-accent/30" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lastName" className="text-right">Nom</Label>
-                <Input id="lastName" value={newLastName} onChange={(e) => setNewLastName(e.target.value)} className="col-span-3 border-futi-accent/30" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">Email</Label>
-                <Input id="email" type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="col-span-3 border-futi-accent/30" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password" className="text-right">Mot de passe</Label>
-                <Input id="password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="col-span-3 border-futi-accent/30" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="role" className="text-right">Rôle</Label>
-                <Select value={newRole} onValueChange={setNewRole}>
-                  <SelectTrigger className="col-span-3 border-futi-accent/30">
-                    <SelectValue placeholder="Sélectionner un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="owner">Propriétaire</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="bg-futi-accent text-futi-night-blue hover:bg-futi-accent/90">Ajouter l'utilisateur</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {/* Removed DialogTrigger and DialogContent for adding user */}
       </div>
 
       <Card className="shadow-md border-futi-accent/20">
@@ -263,7 +160,7 @@ const AdminManagement = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-futi-night-blue">Email</TableHead>
+                  <TableHead className="text-futi-night-blue">Email</TableHead> {/* Email is still fetched from auth.admin.listUsers */}
                   <TableHead className="text-futi-night-blue">Prénom</TableHead>
                   <TableHead className="text-futi-night-blue">Nom</TableHead>
                   <TableHead className="text-futi-night-blue">Rôle</TableHead>

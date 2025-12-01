@@ -8,13 +8,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { useSession } from '@/components/SessionContextProvider';
 
+// Helper function to format phone number to E.164
+const formatPhoneNumber = (phone: string) => {
+  // Remove all non-digit characters
+  const digitsOnly = phone.replace(/\D/g, '');
+  // Ensure it starts with a '+' and includes country code.
+  // For simplicity, assuming +243 for Congo if not already present.
+  if (!digitsOnly.startsWith('243') && digitsOnly.length > 0) {
+    return `+243${digitsOnly}`;
+  }
+  return `+${digitsOnly}`;
+};
+
 const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
@@ -26,49 +37,65 @@ const OwnerRegister = () => {
       } else if (sessionUser.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
       } else {
-        // If user is logged in but has no specific role or an unexpected role, redirect to home
         navigate('/', { replace: true });
       }
     }
   }, [sessionUser, isSessionLoading, navigate]);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      showError("Les mots de passe ne correspondent pas.");
-      return;
-    }
-
     setLoading(true);
-    const toastId = showLoading("Inscription en cours...");
+    const toastId = showLoading("Envoi du code OTP...");
+    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+      // For registration, we use signUp with phone and pass metadata
+      const { error } = await supabase.auth.signUp({
+        phone: formattedPhoneNumber,
         options: {
           data: {
             first_name: firstName,
             last_name: lastName,
-            phone_number: phone,
+            // Assuming 'owner' role is default for new registrations
+            initial_role_id: 'owner', // This will be handled by the handle_new_user trigger
           },
         },
       });
 
       if (error) {
-        console.error("Register: Supabase signUp error:", error.message);
         showError(error.message);
-      } else if (data.user) {
-        console.log("Register: Supabase signUp successful and user logged in. Data:", data);
-        showSuccess("Inscription réussie ! Redirection vers votre tableau de bord.");
-        // Removed direct navigate here. SessionContextProvider's onAuthStateChange will handle it.
       } else {
-        console.log("Register: signUp returned no user, but no error. This might indicate an unexpected state.");
-        showError("Inscription réussie, mais connexion automatique échouée. Veuillez essayer de vous connecter.");
-        navigate('/owner/login');
+        showSuccess("Code OTP envoyé à votre numéro de téléphone !");
+        setOtpSent(true);
       }
     } catch (error: any) {
-      console.error("Register: Unexpected error during signup:", error);
+      showError(error.message);
+    } finally {
+      dismissToast(toastId);
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const toastId = showLoading("Vérification du code OTP...");
+    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: formattedPhoneNumber,
+        token: otp,
+        type: 'sms',
+      });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Inscription et connexion réussies ! Redirection vers votre tableau de bord.");
+        // SessionContextProvider will handle navigation
+      }
+    } catch (error: any) {
       showError(error.message);
     } finally {
       dismissToast(toastId);
@@ -92,95 +119,73 @@ const OwnerRegister = () => {
             Inscription Propriétaire
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Créez votre compte FutiCoop
+            Créez votre compte FutiCoop avec votre numéro de téléphone
           </p>
         </CardHeader>
         <CardContent>
-          <form className="mt-8 space-y-6" onSubmit={handleRegister}>
-            <div>
-              <Label htmlFor="firstName" className="sr-only">Prénom</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                type="text"
-                autoComplete="given-name"
-                required
-                placeholder="Prénom"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="lastName" className="sr-only">Nom de famille</Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                type="text"
-                autoComplete="family-name"
-                required
-                placeholder="Nom de famille"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone" className="sr-only">Téléphone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                required
-                placeholder="Numéro de téléphone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="email" className="sr-only">Adresse e-mail</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Adresse e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="password" className="sr-only">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="confirm-password" className="sr-only">Confirmer le mot de passe</Label>
-              <Input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                placeholder="Confirmer le mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
-              />
-            </div>
+          <form className="mt-8 space-y-6" onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
+            {!otpSent && (
+              <>
+                <div>
+                  <Label htmlFor="firstName" className="sr-only">Prénom</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    autoComplete="given-name"
+                    required
+                    placeholder="Prénom"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName" className="sr-only">Nom de famille</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    autoComplete="family-name"
+                    required
+                    placeholder="Nom de famille"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phoneNumber" className="sr-only">Numéro de téléphone</Label>
+                  <Input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    autoComplete="tel"
+                    required
+                    placeholder="Numéro de téléphone (ex: +243837767676)"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                  />
+                </div>
+              </>
+            )}
+
+            {otpSent && (
+              <div>
+                <Label htmlFor="otp" className="sr-only">Code OTP</Label>
+                <Input
+                  id="otp"
+                  name="otp"
+                  type="text"
+                  required
+                  placeholder="Code OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="relative block w-full px-3 py-2 border border-futi-accent/30 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-futi-accent focus:border-futi-accent sm:text-sm"
+                />
+              </div>
+            )}
 
             <div>
               <Button
@@ -188,7 +193,7 @@ const OwnerRegister = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
                 disabled={loading}
               >
-                {loading ? "Inscription..." : "S'inscrire"}
+                {loading ? (otpSent ? "Vérification..." : "Envoi...") : (otpSent ? "Vérifier le code" : "S'inscrire et envoyer le code OTP")}
               </Button>
             </div>
           </form>
