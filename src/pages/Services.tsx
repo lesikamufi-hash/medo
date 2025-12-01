@@ -62,8 +62,16 @@ const serviceList = [
 
 const Services = () => {
   return (
-    <div className="bg-futi-white py-16 md:py-24">
-      <div className="container mx-auto px-4">
+    <div className="relative bg-futi-white py-16 md:py-24 min-h-screen">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{ backgroundImage: "url('/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg')" }}
+      ></div>
+      {/* Dark overlay for contrast */}
+      <div className="absolute inset-0 bg-gray-900 opacity-5"></div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <h1 className="text-4xl md:text-5xl font-bold text-center text-futi-night-blue mb-16">
           Nos <span className="text-futi-accent">Services</span>
         </h1>
