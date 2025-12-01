@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Car, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ImageCarousel from '@/components/ImageCarousel'; // Import the new carousel component
 
 const services = [
   {
@@ -28,15 +29,19 @@ const services = [
 ];
 
 const Home = () => {
+  const heroImages = [
+    '/aston-martin-black-car.jpg',
+    '/car-background.jpg',
+    '/driver-background.jpg',
+  ];
+
   return (
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section className="relative text-futi-white py-20 md:py-32 overflow-hidden">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/aston-martin-black-car.jpg')" }}
-        ></div>
+        {/* Background Image Carousel */}
+        <ImageCarousel images={heroImages} />
+
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
 
