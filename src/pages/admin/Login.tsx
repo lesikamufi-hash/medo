@@ -6,25 +6,32 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useSession } from '@/components/SessionContextProvider'; // Import useSession
+import { useSession } from '@/components/SessionContextProvider';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState(''); // Changed from username to email
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, isLoading: isSessionLoading } = useSession(); // Use session context
+  const { user, isLoading: isSessionLoading } = useSession();
 
-  // Redirect to dashboard if an admin is already logged in via Supabase session
   useEffect(() => {
-    if (!isSessionLoading && user && user.role === 'admin') {
-      navigate('/admin/dashboard', { replace: true });
+    console.log("AdminLogin useEffect: isSessionLoading:", isSessionLoading, "user:", user);
+    if (!isSessionLoading && user) {
+      if (user.role === 'admin') {
+        console.log("AdminLogin: Admin user detected, redirecting to /admin/dashboard");
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        console.log("AdminLogin: Non-admin user detected, redirecting to /");
+        navigate('/', { replace: true }); // Redirect non-admin logged-in users away
+      }
     }
   }, [user, isSessionLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log("AdminLogin: Starting login process for email:", email);
     const toastId = showLoading("Connexion Admin en cours...");
 
     try {
@@ -34,15 +41,19 @@ const AdminLogin = () => {
       });
 
       if (error) {
+        console.error("AdminLogin: Supabase signInWithPassword error:", error.message);
         showError(error.message);
       } else {
-        // SessionContextProvider will handle fetching the role and redirecting
+        console.log("AdminLogin: Supabase signInWithPassword successful. Waiting for session context to update.");
         showSuccess("Connexion réussie ! Vérification du rôle...");
+        // The SessionContextProvider's onAuthStateChange will handle the redirection
       }
     } catch (error: any) {
+      console.error("AdminLogin: Unexpected error during login:", error);
       showError("Une erreur inattendue est survenue lors de la connexion.");
     } finally {
-      dismissToast(toastId);
+      console.log("AdminLogin: Login process finished, dismissing toast and setting loading to false.");
+      dismissToast(toastId); // Assurez-vous que ce toast est bien fermé
       setLoading(false);
     }
   };
@@ -73,8 +84,8 @@ const AdminLogin = () => {
               <Input
                 id="email"
                 name="email"
-                type="email" // Changed type to email
-                autoComplete="email" // Changed autocomplete
+                type="email"
+                autoComplete="email"
                 required
                 placeholder="Adresse e-mail"
                 value={email}
