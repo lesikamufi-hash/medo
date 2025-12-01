@@ -44,15 +44,21 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode, requiredRole?: strin
     return <Navigate to="/owner/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    // If user is logged in but doesn't have the required role, redirect them
-    if (user.role === 'owner') {
-      return <Navigate to="/owner/dashboard" replace />;
+  // If a required role is specified, check if the user has it
+  if (requiredRole) {
+    if (user.role !== requiredRole) {
+      console.warn(`ProtectedRoute: User ${user.id} has role '${user.role}' but requires '${requiredRole}'. Redirecting.`);
+      // If user is logged in but doesn't have the required role, redirect them
+      if (user.role === 'owner') {
+        return <Navigate to="/owner/dashboard" replace />;
+      } else if (user.role === 'admin') {
+        return <Navigate to="/admin/dashboard" replace />;
+      }
+      // Default redirect for other unauthorized roles or no specific role
+      return <Navigate to="/" replace />;
     }
-    // Default redirect for other unauthorized roles or no specific role
-    return <Navigate to="/" replace />;
   }
-
+  // If no required role, or user has the required role, render children
   return <>{children}</>;
 };
 
@@ -61,7 +67,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}> {/* Added v7_relativeSplatPath flag here */}
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SessionContextProvider>
           <Routes>
             {/* Public Pages with Layout */}

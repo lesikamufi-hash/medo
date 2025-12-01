@@ -41,7 +41,9 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         return undefined;
       }
       console.log("SessionContextProvider: Fetched role data:", data);
-      return data?.role?.name;
+      const fetchedRoleName = data?.role?.name;
+      console.log("SessionContextProvider: Extracted role name:", fetchedRoleName); // Added log
+      return fetchedRoleName;
     };
 
     const { data: authListener } = supabase.auth.onAuthStateChange(

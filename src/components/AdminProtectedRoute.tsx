@@ -15,6 +15,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
 
   // If no user or user is not an admin, redirect to admin login
   if (!user || user.role !== 'admin') {
+    console.warn(`AdminProtectedRoute: User not authenticated or not an admin. Current user role: ${user?.role}. Redirecting to /admin.`);
     return <Navigate to="/admin" replace />;
   }
 
