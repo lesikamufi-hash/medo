@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Car, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ImageCarousel from '@/components/ImageCarousel'; // Import the new carousel component
+// import ImageCarousel from '@/components/ImageCarousel'; // Commenté pour le diagnostic
 
 const services = [
   {
@@ -29,21 +29,23 @@ const services = [
 ];
 
 const Home = () => {
-  const heroImages = [
-    '/aston-martin-black-car.jpg',
-    '/car-background.jpg',
-    '/driver-background.jpg',
-    '/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg',
-    '/moto-cool-a-l-interieur.jpg',
-    '/Aston-Martin-Black-Car-Dark-iphone-8.jpg', // Nouvelle image ajoutée
-  ];
+  // const heroImages = [ // Commenté pour le diagnostic
+  //   '/aston-martin-black-car.jpg',
+  //   '/car-background.jpg',
+  //   '/driver-background.jpg',
+  //   '/chauffeur-de-taxi-feminin-pretant-attention-a-la-route.jpg',
+  //   '/moto-cool-a-l-interieur.jpg',
+  //   '/Aston-Martin-Black-Car-Dark-iphone-8.jpg',
+  // ];
 
   return (
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section className="relative text-futi-white py-20 md:py-32 overflow-hidden">
-        {/* Background Image Carousel */}
-        <ImageCarousel images={heroImages} />
+        {/* Background Image Carousel - Temporarily replaced for diagnosis */}
+        {/* <ImageCarousel images={heroImages} /> */}
+        <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div> {/* Fond uni temporaire */}
+
 
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
