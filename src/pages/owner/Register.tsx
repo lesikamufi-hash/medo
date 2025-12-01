@@ -35,26 +35,24 @@ const OwnerRegister = () => {
           data: {
             first_name: firstName,
             last_name: lastName,
-            phone_number: phone, // Supabase auth.users doesn't have a direct phone field, but can be stored in user_metadata
+            phone_number: phone,
           },
           emailRedirectTo: `${window.location.origin}/owner/login`, // Redirect after email confirmation
         },
       });
 
-      // Log the Supabase response for debugging
-      console.log("Supabase signUp response:", { data, error });
-
       if (error) {
+        console.error("Register: Supabase signUp error:", error.message);
         showError(error.message);
-      } else if (data.user) {
+      } else {
+        // If no error, signup was initiated. User needs to confirm email.
+        console.log("Register: Supabase signUp successful. Data:", data);
         showSuccess("Inscription réussie ! Veuillez vérifier votre e-mail pour confirmer votre compte.");
-        navigate('/owner/login'); // Redirect to login page after successful signup
-      } else if (data.session === null && data.user === null) {
-        // This case happens when email confirmation is required
-        showSuccess("Inscription réussie ! Veuillez vérifier votre e-mail pour confirmer votre compte.");
-        navigate('/owner/login');
+        console.log("Register: Navigating to /owner/login");
+        navigate('/owner/login'); // Always redirect to login page after successful signup initiation
       }
     } catch (error: any) {
+      console.error("Register: Unexpected error during signup:", error);
       showError(error.message);
     } finally {
       dismissToast(toastId);
