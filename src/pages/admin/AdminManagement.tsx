@@ -91,8 +91,13 @@ const AdminManagement = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Échec de la mise à jour du rôle utilisateur');
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          throw new Error(`Erreur du serveur (statut ${response.status}): ${response.statusText || 'Réponse non-JSON ou vide'}`);
+        }
+        throw new Error(errorData.error || `Échec de la mise à jour du rôle utilisateur (statut ${response.status})`);
       }
 
       showSuccess(`Rôle de l'utilisateur mis à jour en ${newRoleName}.`);
@@ -126,8 +131,14 @@ const AdminManagement = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Échec de la suppression de l\'utilisateur');
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          // Si la réponse n'est pas JSON ou est vide, nous affichons un message générique avec le statut
+          throw new Error(`Erreur du serveur (statut ${response.status}): ${response.statusText || 'Réponse non-JSON ou vide'}`);
+        }
+        throw new Error(errorData.error || `Échec de la suppression de l'utilisateur (statut ${response.status})`);
       }
 
       showSuccess("Utilisateur supprimé avec succès.");
@@ -165,8 +176,13 @@ const AdminManagement = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Échec de l\'ajout de l\'utilisateur');
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          throw new Error(`Erreur du serveur (statut ${response.status}): ${response.statusText || 'Réponse non-JSON ou vide'}`);
+        }
+        throw new Error(errorData.error || `Échec de l'ajout de l'utilisateur (statut ${response.status})`);
       }
 
       showSuccess("Utilisateur ajouté avec succès !");
