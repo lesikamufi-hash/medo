@@ -16,7 +16,7 @@ import OwnerVehicles from "./pages/owner/Vehicles";
 import OwnerMaintenance from "./pages/owner/Maintenance";
 import OwnerPlanning from "./pages/owner/Planning";
 import OwnerReports from "./pages/owner/Reports";
-import AdminLogin from "./pages/admin/Login"; // Import the new AdminLogin
+import AdminLogin from "./pages/admin/Login";
 import AdminDashboardLayout from "./pages/admin/AdminDashboardLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOwners from "./pages/admin/Owners";
@@ -25,9 +25,10 @@ import AdminVehicles from "./pages/admin/Vehicles";
 import AdminPlanning from "./pages/admin/Planning";
 import AdminFinance from "./pages/admin/Finance";
 import AdminNotifications from "./pages/admin/Notifications";
+import AdminManagement from "./pages/admin/AdminManagement"; // Import the new AdminManagement page
 import NotFound from "./pages/NotFound";
 import { SessionContextProvider, useSession } from "./components/SessionContextProvider";
-import AdminProtectedRoute from "./components/AdminProtectedRoute"; // Import the new AdminProtectedRoute
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +62,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SessionContextProvider> {/* Enveloppe toutes les routes avec SessionContextProvider */}
+        <SessionContextProvider>
           <Routes>
             {/* Public Pages with Layout */}
             <Route path="/" element={<Layout><Home /></Layout>} /> 
@@ -84,9 +85,10 @@ const App = () => (
             </Route>
 
             {/* Admin Back-Office Routes (Protected by custom admin login) */}
-            <Route path="/admin" element={<AdminLogin />} /> {/* Admin login page */}
+            <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboardLayout /></AdminProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminManagement />} /> {/* New Admin Management route */}
               <Route path="owners" element={<AdminOwners />} />
               <Route path="drivers" element={<AdminDrivers />} />
               <Route path="vehicles" element={<AdminVehicles />} />

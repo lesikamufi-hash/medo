@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { Users, Car, Calendar, DollarSign, BarChart2, BellRing, Settings, LogOut, UserCog } from 'lucide-react';
+import { Users, Car, Calendar, DollarSign, BarChart2, BellRing, Settings, LogOut, UserCog, UserCheck } from 'lucide-react'; // Added UserCheck icon
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
@@ -12,6 +12,7 @@ const AdminDashboardLayout = () => {
 
   const navItems = [
     { name: "Tableau de bord", path: "/admin/dashboard", icon: <BarChart2 className="h-5 w-5" /> },
+    { name: "Gestion Utilisateurs", path: "/admin/dashboard/users", icon: <UserCheck className="h-5 w-5" /> }, // New item
     { name: "Gestion Propriétaires", path: "/admin/dashboard/owners", icon: <Users className="h-5 w-5" /> },
     { name: "Gestion Chauffeurs", path: "/admin/dashboard/drivers", icon: <UserCog className="h-5 w-5" /> },
     { name: "Suivi Véhicules", path: "/admin/dashboard/vehicles", icon: <Car className="h-5 w-5" /> },
