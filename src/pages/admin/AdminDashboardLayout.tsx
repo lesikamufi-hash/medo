@@ -4,7 +4,7 @@ import { Users, Car, Calendar, DollarSign, BarChart2, BellRing, Settings, LogOut
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+// import { supabase } from '@/integrations/supabase/client'; // No longer needed for custom admin logout
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 
 const AdminDashboardLayout = () => {
@@ -23,15 +23,11 @@ const AdminDashboardLayout = () => {
   const handleLogout = async () => {
     const toastId = showLoading("Déconnexion Admin en cours...");
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        showError(error.message);
-      } else {
-        showSuccess("Vous avez été déconnecté de l'administration.");
-        navigate('/owner/login'); // Redirect to owner login or a generic login page
-      }
+      localStorage.removeItem('isAdminLoggedIn'); // Clear the admin login flag
+      showSuccess("Vous avez été déconnecté de l'administration.");
+      navigate('/admin'); // Redirect to the custom admin login page
     } catch (error: any) {
-      showError(error.message);
+      showError("Une erreur est survenue lors de la déconnexion.");
     } finally {
       dismissToast(toastId);
     }

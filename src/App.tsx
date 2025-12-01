@@ -16,6 +16,7 @@ import OwnerVehicles from "./pages/owner/Vehicles";
 import OwnerMaintenance from "./pages/owner/Maintenance";
 import OwnerPlanning from "./pages/owner/Planning";
 import OwnerReports from "./pages/owner/Reports";
+import AdminLogin from "./pages/admin/Login"; // Import the new AdminLogin
 import AdminDashboardLayout from "./pages/admin/AdminDashboardLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOwners from "./pages/admin/Owners";
@@ -26,10 +27,11 @@ import AdminFinance from "./pages/admin/Finance";
 import AdminNotifications from "./pages/admin/Notifications";
 import NotFound from "./pages/NotFound";
 import { SessionContextProvider, useSession } from "./components/SessionContextProvider";
+import AdminProtectedRoute from "./components/AdminProtectedRoute"; // Import the new AdminProtectedRoute
 
 const queryClient = new QueryClient();
 
-// ProtectedRoute component
+// ProtectedRoute component for owner/Supabase roles
 const ProtectedRoute: React.FC<{ children: React.ReactNode, requiredRole?: string }> = ({ children, requiredRole }) => {
   const { user, isLoading } = useSession();
 
@@ -71,7 +73,7 @@ const App = () => (
             <Route path="/owner/login" element={<OwnerLogin />} />
             <Route path="/owner/register" element={<OwnerRegister />} />
 
-            {/* Owner Dashboard Routes (Protected) */}
+            {/* Owner Dashboard Routes (Protected by Supabase role) */}
             <Route path="/owner/dashboard" element={<ProtectedRoute requiredRole="owner"><OwnerDashboardLayout /></ProtectedRoute>}>
               <Route index element={<OwnerDashboard />} />
               <Route path="vehicles" element={<OwnerVehicles />} />
@@ -81,9 +83,9 @@ const App = () => (
               {/* Add other owner dashboard routes here */}
             </Route>
 
-            {/* Admin Back-Office Routes (Protected) */}
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboardLayout /></ProtectedRoute>}>
+            {/* Admin Back-Office Routes (Protected by custom admin login) */}
+            <Route path="/admin" element={<AdminLogin />} /> {/* Admin login page */}
+            <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboardLayout /></AdminProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="owners" element={<AdminOwners />} />
               <Route path="drivers" element={<AdminDrivers />} />
