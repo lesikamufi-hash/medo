@@ -32,6 +32,14 @@ const Home = () => {
     <div className="bg-futi-white">
       {/* Hero Section */}
       <section className="relative bg-futi-night-blue text-futi-white py-20 md:py-32 overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/car-background.jpg')" }}
+        ></div>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
+
         <div className="container mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight animate-fade-in-up">
             <span className="text-futi-orange">FutiCoop</span> : Sécurité — Rentabilité — Confiance
@@ -45,7 +53,6 @@ const Home = () => {
             </Button>
           </Link>
         </div>
-        {/* Background animation/pattern can be added here */}
       </section>
 
       {/* Services Keys Section */}

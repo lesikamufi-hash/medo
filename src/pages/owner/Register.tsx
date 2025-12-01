@@ -7,8 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const OwnerRegister = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-orange/20">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20" // Subtle opacity
+        style={{ backgroundImage: "url('/driver-background.jpg')" }}
+      ></div>
+      {/* Dark overlay for contrast */}
+      <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
+
+      <Card className="max-w-md w-full space-y-8 shadow-lg border-futi-orange/20 relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-futi-night-blue">
             Inscription Propriétaire
