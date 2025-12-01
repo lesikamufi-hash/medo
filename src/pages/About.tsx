@@ -56,7 +56,7 @@ const About = () => {
             </Card>
             <Card className="text-center p-6 shadow-md border-futi-orange/20">
               <TrendingUp className="h-12 w-12 text-futi-orange" />
-              <h3 className="text-xl font-semibold text-futi-night-blue mb-2">Rentabilité</h3>
+              <h3 className="text-xl font-semibold mb-2">Rentabilité</h3>
               <p className="text-gray-700">Maximiser les retours sur investissement pour nos clients.</p>
             </Card>
           </div>
