@@ -35,7 +35,7 @@ const Home = () => {
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/car-background.jpg')" }}
+          style={{ backgroundImage: "url('/aston-martin-black-car.jpg')" }}
         ></div>
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
