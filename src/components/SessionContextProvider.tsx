@@ -37,7 +37,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           .eq('id', userId)
           .single();
 
-        console.log("SessionContextProvider: fetchUserRole - Supabase role fetch result - data:", data, "error:", error);
+        console.log("SessionContextProvider: fetchUserRole - Supabase query result - data:", data, "error:", error);
 
         if (error) {
           console.error("SessionContextProvider: fetchUserRole - Error fetching user role:", error.message);
