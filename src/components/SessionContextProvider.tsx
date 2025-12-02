@@ -47,7 +47,8 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
         if (!profileData || !profileData.role_id) {
           console.warn("SessionContextProvider: fetchUserRole - No profile data found or missing role_id for user ID:", userId, "Data:", profileData);
-          showError("Profil utilisateur introuvable ou rôle non défini.");
+          // Do NOT show an error toast here, as it might be a new user without a role yet, or a user with a different flow.
+          // showError("Profil utilisateur introuvable ou rôle non défini."); // Removed this toast
           return undefined;
         }
 
@@ -68,7 +69,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         const fetchedRoleName = roleNameData?.name;
         if (!fetchedRoleName) {
           console.warn("SessionContextProvider: fetchUserRole - Role name not found for role_id:", profileData.role_id, "Data:", roleNameData);
-          showError("Nom du rôle non défini pour l'ID de rôle.");
+          // showError("Nom du rôle non défini pour l'ID de rôle."); // Removed this toast
         }
         console.log("SessionContextProvider: fetchUserRole - Fetched role name:", fetchedRoleName);
         return fetchedRoleName;
