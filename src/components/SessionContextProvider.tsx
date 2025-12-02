@@ -56,13 +56,15 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           .select('name')
           .eq('id', profileData.role_id)
           .single();
+        
+        // NEW LOGS ADDED HERE
         console.log("SessionContextProvider: fetchUserRole - AFTER fetching role name. roleNameData:", roleNameData, "roleNameError:", roleNameError);
-
         if (roleNameError) {
-          console.error("SessionContextProvider: fetchUserRole - Error fetching role name:", roleNameError.message);
+          console.error("SessionContextProvider: fetchUserRole - DETAILED ERROR fetching role name:", roleNameError);
           showError("Erreur lors de la récupération du nom du rôle: " + roleNameError.message);
           return undefined;
         }
+        // END NEW LOGS
 
         const fetchedRoleName = roleNameData?.name;
         if (!fetchedRoleName) {
