@@ -13,15 +13,36 @@ import { useSession } from '@/components/SessionContextProvider';
 const OwnerRegister = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState(''); // New state for username
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [ownerRoleId, setOwnerRoleId] = useState<string | null>(null); // State to store owner role ID
   const navigate = useNavigate();
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
   useEffect(() => {
+    // Fetch the 'owner' role ID when the component mounts
+    const fetchOwnerRoleId = async () => {
+      const { data, error } = await supabase
+        .from('roles')
+        .select('id')
+        .eq('name', 'owner')
+        .single();
+
+      if (error) {
+        console.error("Error fetching 'owner' role ID:", error.message);
+        showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire'.");
+      } else if (data) {
+        setOwnerRoleId(data.id);
+      } else {
+        console.error("Role 'owner' not found in the database.");
+        showError("Le rôle 'propriétaire' n'a pas été trouvé dans la base de données. Veuillez contacter l'administrateur.");
+      }
+    };
+    fetchOwnerRoleId();
+
     if (!isSessionLoading && sessionUser) {
       if (sessionUser.role === 'owner') {
         navigate('/owner/dashboard', { replace: true });
@@ -45,6 +66,13 @@ const OwnerRegister = () => {
       return;
     }
 
+    if (!ownerRoleId) {
+      showError("Impossible de s'inscrire : l'ID du rôle 'propriétaire' n'a pas été chargé.");
+      setLoading(false);
+      dismissToast(toastId);
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email: email,
@@ -53,8 +81,8 @@ const OwnerRegister = () => {
           data: {
             first_name: firstName,
             last_name: lastName,
-            username: username.toLowerCase(), // Convertir le nom d'utilisateur en minuscules
-            initial_role_id: 'owner', // This will be handled by the handle_new_user trigger
+            username: username.toLowerCase(),
+            initial_role_id: ownerRoleId, // Pass the actual UUID for the 'owner' role
           },
         },
       });
@@ -183,7 +211,7 @@ const OwnerRegister = () => {
               <Button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-futi-night-blue bg-futi-accent hover:bg-futi-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-futi-accent"
-                disabled={loading}
+                disabled={loading || !ownerRoleId} // Disable button if loading or role ID not fetched
               >
                 {loading ? "Inscription..." : "S'inscrire"}
               </Button>
