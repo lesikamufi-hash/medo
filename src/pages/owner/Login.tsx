@@ -39,25 +39,24 @@ const OwnerLogin = () => {
 
       // Check if the identifier is likely an email
       if (!identifier.includes('@')) {
-        // If not an email, assume it's a username and try to find the associated email
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id') // We only need the user ID to then get the email from auth.users
-          .eq('username', identifier)
-          .single();
-
-        if (error || !data) {
-          throw new Error("Nom d'utilisateur introuvable ou erreur de base de données.");
-        }
+        // If not an email, assume it's a username and call the Edge Function
+        const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/resolve-username-to-email`;
         
-        // Now get the email from auth.users using the profile ID
-        const { data: authUserData, error: authUserError } = await supabase.auth.admin.getUserById(data.id);
+        const response = await fetch(EDGE_FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: identifier }),
+        });
 
-        if (authUserError || !authUserData?.user?.email) {
-          throw new Error("Impossible de récupérer l'e-mail associé au nom d'utilisateur.");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Échec de la résolution du nom d'utilisateur.");
         }
-        emailToLogin = authUserData.user.email;
 
+        const data = await response.json();
+        emailToLogin = data.email;
       }
 
       const { error } = await supabase.auth.signInWithPassword({
