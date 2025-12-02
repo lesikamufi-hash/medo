@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UserMinus, Trash2, UserPlus } from 'lucide-react'; // Added UserPlus
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL } from '@/integrations/supabase/client';
 
 interface UserProfile {
   id: string;
@@ -22,7 +22,7 @@ const AdminManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/manage-users`;
+  const EDGE_FUNCTION_URL = `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/manage-users`;
 
   const fetchUsers = async () => {
     setLoading(true);

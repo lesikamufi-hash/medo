@@ -30,7 +30,7 @@ serve(async (req) => {
     // Find the user ID from the profiles table using the username (case-insensitive)
     const { data: profileData, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('id')
+      .select('user_id, username')
       .ilike('username', username.toLowerCase()) // Convert input to lowercase for case-insensitive search
       .single()
 
@@ -42,7 +42,7 @@ serve(async (req) => {
     }
 
     // Get the user's email from auth.users using the user ID
-    const { data: authUserData, error: authUserError } = await supabaseAdmin.auth.admin.getUserById(profileData.id)
+    const { data: authUserData, error: authUserError } = await supabaseAdmin.auth.admin.getUserById(profileData.user_id)
 
     if (authUserError || !authUserData?.user?.email) {
       return new Response(JSON.stringify({ error: "Impossible de récupérer l'e-mail associé au nom d'utilisateur." }), {

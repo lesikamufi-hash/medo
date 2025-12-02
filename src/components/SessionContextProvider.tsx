@@ -35,8 +35,8 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('role_id') // Select only role_id
-          .eq('id', userId)
-          .single();
+          .eq('user_id', userId)
+          .maybeSingle(); // Use maybeSingle() instead of single() to handle 0 or 1 results
         console.log("SessionContextProvider: fetchUserRole - AFTER fetching profile. profileData:", profileData, "profileError:", profileError);
 
         if (profileError) {

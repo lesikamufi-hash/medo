@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { useSession } from '@/components/SessionContextProvider';
 
@@ -45,26 +45,37 @@ const OwnerLogin = () => {
       // Check if the identifier is likely an email
       if (!identifier.includes('@')) {
         console.log("OwnerLogin: Identifier is not an email, attempting to resolve username to email via Edge Function.");
-        // If not an email, assume it's a username and call the Edge Function
-        const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/resolve-username-to-email`;
-        
-        const response = await fetch(EDGE_FUNCTION_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username: identifier }),
-        });
+        try {
+          // If not an email, assume it's a username and call the Edge Function
+          // Build the Edge Function URL from the configured SUPABASE_URL so switching projects is easier
+          const EDGE_FUNCTION_URL = `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/resolve-username-to-email`;
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("OwnerLogin: Edge Function error:", errorData.error);
-          throw new Error(errorData.error || "Échec de la résolution du nom d'utilisateur.");
+          const response = await fetch(EDGE_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              // Include the public anon key so functions that require an API key accept the request
+              'apikey': SUPABASE_PUBLISHABLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({ username: identifier }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("OwnerLogin: Edge Function error:", errorData.error);
+            throw new Error(errorData.error || "Échec de la résolution du nom d'utilisateur.");
+          }
+
+          const data = await response.json();
+          emailToLogin = data.email;
+          console.log("OwnerLogin: Username resolved to email:", emailToLogin);
+        } catch (edgeFunctionError) {
+          console.warn("OwnerLogin: Edge Function failed, falling back to username as email:", edgeFunctionError);
+          // Fallback: Try using the username as email (many users set username = email prefix)
+          emailToLogin = `${identifier}@futicoop.local`;
+          console.log("OwnerLogin: Attempting login with fallback email:", emailToLogin);
         }
-
-        const data = await response.json();
-        emailToLogin = data.email;
-        console.log("OwnerLogin: Username resolved to email:", emailToLogin);
       } else {
         console.log("OwnerLogin: Identifier is an email:", identifier);
       }
