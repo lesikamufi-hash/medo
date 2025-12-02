@@ -29,7 +29,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     console.log("SessionContextProvider useEffect: Initializing auth listener.");
 
     const fetchUserRole = async (userId: string) => {
-      console.log("SessionContextProvider: Fetching role for user ID:", userId);
+      console.log("SessionContextProvider: fetchUserRole - Fetching role for user ID:", userId);
       try {
         const { data, error } = await supabase
           .from('profiles')
@@ -37,69 +37,75 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           .eq('id', userId)
           .single();
 
-        console.log("SessionContextProvider: Supabase role fetch result - data:", data, "error:", error);
+        console.log("SessionContextProvider: fetchUserRole - Supabase role fetch result - data:", data, "error:", error);
 
         if (error) {
-          console.error("SessionContextProvider: Error fetching user role:", error.message);
+          console.error("SessionContextProvider: fetchUserRole - Error fetching user role:", error.message);
           return undefined;
         }
         const fetchedRoleName = data?.role?.name;
-        console.log("SessionContextProvider: Fetched role name:", fetchedRoleName);
+        console.log("SessionContextProvider: fetchUserRole - Fetched role name:", fetchedRoleName);
         return fetchedRoleName;
       } catch (e: any) {
-        console.error("SessionContextProvider: Unexpected error during role fetch:", e.message);
+        console.error("SessionContextProvider: fetchUserRole - Unexpected error during role fetch:", e.message);
         return undefined;
       }
     };
 
     const handleSessionChange = async (event: string, currentSession: Session | null) => {
-      console.log("SessionContextProvider: onAuthStateChange event:", event, "session:", currentSession);
+      console.log("SessionContextProvider: handleSessionChange - onAuthStateChange event:", event, "session:", currentSession);
       setIsLoading(true); // Set loading true at the start of any auth state change
       try {
         if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
-          console.log("SessionContextProvider: User SIGNED_OUT.");
+          console.log("SessionContextProvider: handleSessionChange - User SIGNED_OUT.");
           // Redirect to login if trying to access a protected route after sign out
           if (location.pathname.startsWith('/owner/dashboard') || location.pathname.startsWith('/admin/dashboard')) {
-            console.log("SessionContextProvider: Redirecting to /owner/login after sign out from protected route.");
+            console.log("SessionContextProvider: handleSessionChange - Redirecting to /owner/login after sign out from protected route.");
             navigate('/owner/login', { replace: true }); // Or a generic login page
           }
         } else if (currentSession) {
-          console.log("SessionContextProvider: User SIGNED_IN or session available.");
+          console.log("SessionContextProvider: handleSessionChange - User SIGNED_IN or session available.");
           const role = await fetchUserRole(currentSession.user.id);
           const userWithRole: UserWithRole = { ...currentSession.user, role };
           setSession(currentSession);
           setUser(userWithRole);
-          console.log("SessionContextProvider: User authenticated and role set:", userWithRole);
+          console.log("SessionContextProvider: handleSessionChange - User authenticated and role set:", userWithRole);
 
           // Redirect authenticated users from login/register pages to their dashboard
           const adminLoginPath = '/admin';
           const ownerLoginPath = '/owner/login';
           const ownerRegisterPath = '/owner/register';
 
-          console.log(`SessionContextProvider: Current path: ${location.pathname}`);
+          console.log(`SessionContextProvider: handleSessionChange - Current path: ${location.pathname}`);
           if (location.pathname === adminLoginPath || location.pathname === ownerLoginPath || location.pathname === ownerRegisterPath) {
-            console.log(`SessionContextProvider: Attempting redirection from ${location.pathname}. User role: ${role}`);
+            console.log(`SessionContextProvider: handleSessionChange - Attempting redirection from ${location.pathname}. User role: ${role}`);
             if (role === 'admin') {
-              console.log('SessionContextProvider: Navigating to /admin/dashboard');
+              console.log('SessionContextProvider: handleSessionChange - Navigating to /admin/dashboard');
               navigate('/admin/dashboard', { replace: true });
             } else if (role === 'owner') {
-              console.log('SessionContextProvider: Navigating to /owner/dashboard');
+              console.log('SessionContextProvider: handleSessionChange - Navigating to /owner/dashboard');
               navigate('/owner/dashboard', { replace: true });
             } else {
-              console.log('SessionContextProvider: User has no specific role or an unexpected role, not redirecting from login/register page.');
+              console.log('SessionContextProvider: handleSessionChange - User has no specific role or an unexpected role, not redirecting from login/register page.');
+              // If user is logged in but has no specific role, redirect to home or a default page
+              navigate('/', { replace: true });
             }
           } else {
-            console.log('SessionContextProvider: Not on a login/register page, no automatic redirection needed here.');
+            console.log('SessionContextProvider: handleSessionChange - Not on a login/register page, no automatic redirection needed here.');
           }
+        } else {
+          console.log("SessionContextProvider: handleSessionChange - No current session found.");
+          setSession(null);
+          setUser(null);
         }
       } catch (e: any) {
-        console.error("SessionContextProvider: Error in handleSessionChange:", e.message);
+        console.error("SessionContextProvider: handleSessionChange - Error in handleSessionChange:", e.message);
         showError("Erreur lors de la gestion de la session: " + e.message);
       } finally {
         setIsLoading(false); // Always set loading false
-        console.log("SessionContextProvider: handleSessionChange finished, setIsLoading(false)");
+        console.log("SessionContextProvider: handleSessionChange - finished, setIsLoading(false)");
       }
     };
 
@@ -107,53 +113,55 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
     // Fetch initial session
     const getInitialSession = async () => {
-      console.log("SessionContextProvider: Fetching initial session.");
+      console.log("SessionContextProvider: getInitialSession - Fetching initial session.");
       setIsLoading(true); // Ensure loading is true during initial fetch
       try {
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error("SessionContextProvider: Error fetching initial session:", error.message);
+          console.error("SessionContextProvider: getInitialSession - Error fetching initial session:", error.message);
           showError(error.message);
         } else {
           if (initialSession) {
-            console.log("SessionContextProvider: Initial session found.");
+            console.log("SessionContextProvider: getInitialSession - Initial session found.");
             const role = await fetchUserRole(initialSession.user.id);
             const userWithRole: UserWithRole = { ...initialSession.user, role };
             setSession(initialSession);
             setUser(userWithRole);
-            console.log("SessionContextProvider: Initial session user and role set:", userWithRole);
+            console.log("SessionContextProvider: getInitialSession - Initial session user and role set:", userWithRole);
 
             const adminLoginPath = '/admin';
             const ownerLoginPath = '/owner/login';
             const ownerRegisterPath = '/owner/register';
 
-            console.log(`SessionContextProvider: Current path for initial session: ${location.pathname}`);
+            console.log(`SessionContextProvider: getInitialSession - Current path for initial session: ${location.pathname}`);
             if (location.pathname === adminLoginPath || location.pathname === ownerLoginPath || location.pathname === ownerRegisterPath) {
-              console.log(`SessionContextProvider: Attempting initial redirection from ${location.pathname}. User role: ${role}`);
+              console.log(`SessionContextProvider: getInitialSession - Attempting initial redirection from ${location.pathname}. User role: ${role}`);
               if (role === 'admin') {
-                console.log('SessionContextProvider: Initial Navigating to /admin/dashboard');
+                console.log('SessionContextProvider: getInitialSession - Initial Navigating to /admin/dashboard');
                 navigate('/admin/dashboard', { replace: true });
               } else if (role === 'owner') {
-                console.log('SessionContextProvider: Initial Navigating to /owner/dashboard');
+                console.log('SessionContextProvider: getInitialSession - Initial Navigating to /owner/dashboard');
                 navigate('/owner/dashboard', { replace: true });
               } else {
-                console.log('SessionContextProvider: Initial: User has no specific role or an unexpected role, not redirecting from login/register page.');
+                console.log('SessionContextProvider: getInitialSession - Initial: User has no specific role or an unexpected role, not redirecting from login/register page.');
+                // If user is logged in but has no specific role, redirect to home or a default page
+                navigate('/', { replace: true });
               }
             } else {
-              console.log('SessionContextProvider: Initial: Not on a login/register page, no automatic redirection needed here.');
+              console.log('SessionContextProvider: getInitialSession - Initial: Not on a login/register page, no automatic redirection needed here.');
             }
           } else {
-            console.log("SessionContextProvider: No initial session found.");
+            console.log("SessionContextProvider: getInitialSession - No initial session found.");
             setSession(null);
             setUser(null);
           }
         }
       } catch (e: any) {
-        console.error("SessionContextProvider: Error in getInitialSession:", e.message);
+        console.error("SessionContextProvider: getInitialSession - Error in getInitialSession:", e.message);
         showError("Erreur lors de la récupération de la session initiale: " + e.message);
       } finally {
         setIsLoading(false); // Always set loading false
-        console.log("SessionContextProvider: Initial session fetch finished, setIsLoading(false)");
+        console.log("SessionContextProvider: getInitialSession - Initial session fetch finished, setIsLoading(false)");
       }
     };
 

@@ -18,12 +18,16 @@ const OwnerLogin = () => {
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
   useEffect(() => {
+    console.log("OwnerLogin useEffect: isSessionLoading:", isSessionLoading, "sessionUser:", sessionUser);
     if (!isSessionLoading && sessionUser) {
       if (sessionUser.role === 'owner') {
+        console.log("OwnerLogin: Redirecting to /owner/dashboard");
         navigate('/owner/dashboard', { replace: true });
       } else if (sessionUser.role === 'admin') {
+        console.log("OwnerLogin: Redirecting to /admin/dashboard (admin user trying owner login)");
         navigate('/admin/dashboard', { replace: true });
       } else {
+        console.log("OwnerLogin: Redirecting to / (user with no specific role)");
         navigate('/', { replace: true });
       }
     }
@@ -33,12 +37,14 @@ const OwnerLogin = () => {
     e.preventDefault();
     setLoading(true);
     const toastId = showLoading("Connexion en cours...");
+    console.log("OwnerLogin: handleLogin initiated for identifier:", identifier);
 
     try {
       let emailToLogin = identifier;
 
       // Check if the identifier is likely an email
       if (!identifier.includes('@')) {
+        console.log("OwnerLogin: Identifier is not an email, attempting to resolve username to email via Edge Function.");
         // If not an email, assume it's a username and call the Edge Function
         const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/resolve-username-to-email`;
         
@@ -52,17 +58,23 @@ const OwnerLogin = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error("OwnerLogin: Edge Function error:", errorData.error);
           throw new Error(errorData.error || "Échec de la résolution du nom d'utilisateur.");
         }
 
         const data = await response.json();
         emailToLogin = data.email;
+        console.log("OwnerLogin: Username resolved to email:", emailToLogin);
+      } else {
+        console.log("OwnerLogin: Identifier is an email:", identifier);
       }
 
+      console.log("OwnerLogin: Attempting signInWithPassword with email:", emailToLogin);
       const { error } = await supabase.auth.signInWithPassword({
         email: emailToLogin,
         password: password,
       });
+      console.log("OwnerLogin: signInWithPassword returned. Error:", error);
 
       if (error) {
         showError(error.message);
@@ -71,10 +83,12 @@ const OwnerLogin = () => {
         // SessionContextProvider will handle navigation
       }
     } catch (error: any) {
+      console.error("OwnerLogin: Caught error during login:", error.message);
       showError(error.message);
     } finally {
       dismissToast(toastId);
       setLoading(false);
+      console.log("OwnerLogin: handleLogin finished.");
     }
   };
 

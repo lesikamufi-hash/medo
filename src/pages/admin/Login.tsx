@@ -18,10 +18,13 @@ const AdminLogin = () => {
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
   useEffect(() => {
+    console.log("AdminLogin useEffect: isSessionLoading:", isSessionLoading, "sessionUser:", sessionUser);
     if (!isSessionLoading && sessionUser) {
       if (sessionUser.role === 'admin') {
+        console.log("AdminLogin: Redirecting to /admin/dashboard");
         navigate('/admin/dashboard', { replace: true });
       } else {
+        console.log("AdminLogin: Redirecting to / (non-admin user trying admin login)");
         navigate('/', { replace: true });
       }
     }
@@ -31,12 +34,14 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     const toastId = showLoading("Connexion Admin en cours...");
+    console.log("AdminLogin: handleLogin initiated for identifier:", identifier);
 
     try {
       let emailToLogin = identifier;
 
       // Check if the identifier is likely an email
       if (!identifier.includes('@')) {
+        console.log("AdminLogin: Identifier is not an email, attempting to resolve username to email via Edge Function.");
         // If not an email, assume it's a username and call the Edge Function
         const EDGE_FUNCTION_URL = `https://lfmyjpnelfvpgdhfojwt.supabase.co/functions/v1/resolve-username-to-email`;
         
@@ -50,17 +55,23 @@ const AdminLogin = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error("AdminLogin: Edge Function error:", errorData.error);
           throw new Error(errorData.error || "Échec de la résolution du nom d'utilisateur.");
         }
 
         const data = await response.json();
         emailToLogin = data.email;
+        console.log("AdminLogin: Username resolved to email:", emailToLogin);
+      } else {
+        console.log("AdminLogin: Identifier is an email:", identifier);
       }
 
+      console.log("AdminLogin: Attempting signInWithPassword with email:", emailToLogin);
       const { error } = await supabase.auth.signInWithPassword({
         email: emailToLogin,
         password: password,
       });
+      console.log("AdminLogin: signInWithPassword returned. Error:", error);
 
       if (error) {
         showError(error.message);
@@ -69,10 +80,12 @@ const AdminLogin = () => {
         // SessionContextProvider will handle navigation
       }
     } catch (error: any) {
+      console.error("AdminLogin: Caught error during login:", error.message);
       showError(error.message);
     } finally {
       dismissToast(toastId);
       setLoading(false);
+      console.log("AdminLogin: handleLogin finished.");
     }
   };
 
