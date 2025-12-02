@@ -34,8 +34,8 @@ const OwnerRegister = () => {
         .single();
 
       if (error) {
-        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message);
-        showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire'.");
+        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message, error); // Log the full error object
+        showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire': " + error.message);
       } else if (data) {
         console.log("OwnerRegister: Successfully fetched 'owner' role ID:", data.id);
         setOwnerRoleId(data.id);
