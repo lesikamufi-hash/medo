@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, MapPin } from 'lucide-react'; // Suppression des imports d'icônes de réseaux sociaux
-import SocialMediaIcons from '@/components/SocialMediaIcons'; // Importation du nouveau composant
+import { Mail, Phone, MapPin } from 'lucide-react';
+import SocialMediaIcons from '@/components/SocialMediaIcons';
 
 const Contact = () => {
   return (
@@ -48,11 +48,18 @@ const Contact = () => {
 
           {/* Contact Information & Social Media */}
           <div className="space-y-8">
-            <Card className="shadow-lg border-futi-accent/20">
-              <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-futi-night-blue">Nos Coordonnées</CardTitle>
+            <Card className="shadow-lg border-futi-accent/20 relative overflow-hidden">
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center opacity-30"
+                style={{ backgroundImage: "url('/moto-cool-a-l-interieur.jpg')" }}
+              ></div>
+              {/* Dark overlay for contrast */}
+              <div className="absolute inset-0 bg-futi-night-blue opacity-70"></div>
+              <CardHeader className="relative z-10">
+                <CardTitle className="text-2xl font-semibold text-futi-white">Nos Coordonnées</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 text-lg text-gray-700">
+              <CardContent className="space-y-4 text-lg text-futi-white relative z-10">
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-6 w-6 text-futi-accent" />
                   <span>1, Avenue 24 Novembre, Gombe — Station Arianna</span>
@@ -74,7 +81,7 @@ const Contact = () => {
                 <CardTitle className="text-2xl font-semibold text-futi-night-blue">Suivez-nous</CardTitle>
               </CardHeader>
               <CardContent>
-                <SocialMediaIcons /> {/* Utilisation du composant réutilisable */}
+                <SocialMediaIcons />
               </CardContent>
             </Card>
 
