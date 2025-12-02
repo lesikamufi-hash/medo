@@ -6,8 +6,25 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import SocialMediaIcons from '@/components/SocialMediaIcons';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'; // Import Google Maps components
+
+const containerStyle = {
+  width: '100%',
+  height: '400px'
+};
+
+// Approximate coordinates for Gombe, Kinshasa
+const center = {
+  lat: -4.3162, // Latitude for Gombe, Kinshasa
+  lng: 15.3131  // Longitude for Gombe, Kinshasa
+};
 
 const Contact = () => {
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY, // Use the API key from environment variables
+  });
+
   return (
     <div className="bg-futi-white py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -85,15 +102,25 @@ const Contact = () => {
               </CardContent>
             </Card>
 
-            {/* Google Map Placeholder */}
+            {/* Google Map */}
             <Card className="shadow-lg border-futi-accent/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-futi-night-blue">Où nous trouver</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 text-center">
-                  <p>Emplacement Google Map (intégration future)</p>
-                </div>
+                {isLoaded ? (
+                  <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={center}
+                    zoom={14}
+                  >
+                    <Marker position={center} />
+                  </GoogleMap>
+                ) : (
+                  <div className="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 text-center">
+                    Chargement de la carte...
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
