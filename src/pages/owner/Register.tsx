@@ -53,7 +53,7 @@ const OwnerRegister = () => {
           data: {
             first_name: firstName,
             last_name: lastName,
-            username: username, // Pass username to Supabase metadata
+            username: username.toLowerCase(), // Convertir le nom d'utilisateur en minuscules
             initial_role_id: 'owner', // This will be handled by the handle_new_user trigger
           },
         },

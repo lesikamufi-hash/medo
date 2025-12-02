@@ -27,11 +27,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Find the user ID from the profiles table using the username
+    // Find the user ID from the profiles table using the username (case-insensitive)
     const { data: profileData, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id')
-      .eq('username', username)
+      .ilike('username', username.toLowerCase()) // Convert input to lowercase for case-insensitive search
       .single()
 
     if (profileError || !profileData) {
