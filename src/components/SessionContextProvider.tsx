@@ -29,16 +29,15 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     console.log("SessionContextProvider useEffect: Initializing auth listener.");
 
     const fetchUserRole = async (userId: string) => {
-      console.log("SessionContextProvider: fetchUserRole - Fetching role for user ID:", userId);
+      console.log("SessionContextProvider: fetchUserRole - START for user ID:", userId);
       try {
-        // Step 1: Fetch the profile to get the role_id
+        console.log("SessionContextProvider: fetchUserRole - BEFORE fetching profile for user ID:", userId);
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('role_id') // Select only role_id
           .eq('id', userId)
           .single();
-
-        console.log("SessionContextProvider: fetchUserRole - Profile data result - profileData:", profileData, "profileError:", profileError);
+        console.log("SessionContextProvider: fetchUserRole - AFTER fetching profile. profileData:", profileData, "profileError:", profileError);
 
         if (profileError) {
           console.error("SessionContextProvider: fetchUserRole - Error fetching profile data:", profileError.message);
@@ -47,19 +46,18 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         }
 
         if (!profileData || !profileData.role_id) {
-          console.warn("SessionContextProvider: fetchUserRole - No profile data or missing role_id for user ID:", userId, "Data:", profileData);
+          console.warn("SessionContextProvider: fetchUserRole - No profile data found or missing role_id for user ID:", userId, "Data:", profileData);
           showError("Profil utilisateur introuvable ou rôle non défini.");
           return undefined;
         }
 
-        // Step 2: If profile and role_id exist, fetch the role name from the roles table
+        console.log("SessionContextProvider: fetchUserRole - BEFORE fetching role name for role_id:", profileData.role_id);
         const { data: roleNameData, error: roleNameError } = await supabase
           .from('roles')
           .select('name')
           .eq('id', profileData.role_id)
           .single();
-
-        console.log("SessionContextProvider: fetchUserRole - Role name data result - roleNameData:", roleNameData, "roleNameError:", roleNameError);
+        console.log("SessionContextProvider: fetchUserRole - AFTER fetching role name. roleNameData:", roleNameData, "roleNameError:", roleNameError);
 
         if (roleNameError) {
           console.error("SessionContextProvider: fetchUserRole - Error fetching role name:", roleNameError.message);
@@ -78,6 +76,8 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         console.error("SessionContextProvider: fetchUserRole - Unexpected error during role fetch:", e.message);
         showError("Erreur inattendue lors de la récupération du rôle: " + e.message);
         return undefined;
+      } finally {
+        console.log("SessionContextProvider: fetchUserRole - END for user ID:", userId);
       }
     };
 
