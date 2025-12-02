@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'; // Importation des nouvelles icônes
+import { Mail, Phone, MapPin } from 'lucide-react'; // Suppression des imports d'icônes de réseaux sociaux
+import SocialMediaIcons from '@/components/SocialMediaIcons'; // Importation du nouveau composant
 
 const Contact = () => {
   return (
@@ -73,20 +74,7 @@ const Contact = () => {
                 <CardTitle className="text-2xl font-semibold text-futi-night-blue">Suivez-nous</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-center space-x-6">
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="text-futi-night-blue hover:text-futi-accent transition-colors">
-                    <Facebook className="h-8 w-8" />
-                  </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="text-futi-night-blue hover:text-futi-accent transition-colors">
-                    <Twitter className="h-8 w-8" />
-                  </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="text-futi-night-blue hover:text-futi-accent transition-colors">
-                    <Instagram className="h-8 w-8" />
-                  </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="text-futi-night-blue hover:text-futi-accent transition-colors">
-                    <Linkedin className="h-8 w-8" />
-                  </a>
-                </div>
+                <SocialMediaIcons /> {/* Utilisation du composant réutilisable */}
               </CardContent>
             </Card>
 
