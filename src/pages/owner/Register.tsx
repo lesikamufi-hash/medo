@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } = '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { useSession } from '@/components/SessionContextProvider';
@@ -32,7 +32,7 @@ const OwnerRegister = () => {
         .single();
 
       if (error) {
-        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message, error); // Log the full error object
+        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message);
         showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire'.");
       } else if (data) {
         setOwnerRoleId(data.id);
