@@ -31,30 +31,46 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     const fetchUserRole = async (userId: string) => {
       console.log("SessionContextProvider: fetchUserRole - Fetching role for user ID:", userId);
       try {
-        const { data, error } = await supabase
+        // Step 1: Fetch the profile to get the role_id
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('role:roles(name)')
+          .select('role_id') // Select only role_id
           .eq('id', userId)
           .single();
 
-        console.log("SessionContextProvider: fetchUserRole - Supabase query result - data:", data, "error:", error);
+        console.log("SessionContextProvider: fetchUserRole - Profile data result - profileData:", profileData, "profileError:", profileError);
 
-        if (error) {
-          console.error("SessionContextProvider: fetchUserRole - Error fetching user role:", error.message);
-          showError("Erreur lors de la récupération du rôle utilisateur: " + error.message);
-          return undefined;
-        }
-        
-        if (!data) {
-          console.error("SessionContextProvider: fetchUserRole - No profile data found for user ID:", userId);
-          showError("Aucun profil trouvé pour cet utilisateur.");
+        if (profileError) {
+          console.error("SessionContextProvider: fetchUserRole - Error fetching profile data:", profileError.message);
+          showError("Erreur lors de la récupération du profil utilisateur: " + profileError.message);
           return undefined;
         }
 
-        const fetchedRoleName = data?.role?.name;
+        if (!profileData || !profileData.role_id) {
+          console.warn("SessionContextProvider: fetchUserRole - No profile data or missing role_id for user ID:", userId, "Data:", profileData);
+          showError("Profil utilisateur introuvable ou rôle non défini.");
+          return undefined;
+        }
+
+        // Step 2: If profile and role_id exist, fetch the role name from the roles table
+        const { data: roleNameData, error: roleNameError } = await supabase
+          .from('roles')
+          .select('name')
+          .eq('id', profileData.role_id)
+          .single();
+
+        console.log("SessionContextProvider: fetchUserRole - Role name data result - roleNameData:", roleNameData, "roleNameError:", roleNameError);
+
+        if (roleNameError) {
+          console.error("SessionContextProvider: fetchUserRole - Error fetching role name:", roleNameError.message);
+          showError("Erreur lors de la récupération du nom du rôle: " + roleNameError.message);
+          return undefined;
+        }
+
+        const fetchedRoleName = roleNameData?.name;
         if (!fetchedRoleName) {
-          console.warn("SessionContextProvider: fetchUserRole - User profile found but no role name associated or role is null for user ID:", userId, "Data:", data);
-          showError("Rôle utilisateur non défini. Veuillez contacter l'administrateur.");
+          console.warn("SessionContextProvider: fetchUserRole - Role name not found for role_id:", profileData.role_id, "Data:", roleNameData);
+          showError("Nom du rôle non défini pour l'ID de rôle.");
         }
         console.log("SessionContextProvider: fetchUserRole - Fetched role name:", fetchedRoleName);
         return fetchedRoleName;
