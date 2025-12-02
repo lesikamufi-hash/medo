@@ -47,8 +47,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
         if (!profileData || !profileData.role_id) {
           console.warn("SessionContextProvider: fetchUserRole - No profile data found or missing role_id for user ID:", userId, "Data:", profileData);
-          // Do NOT show an error toast here, as it might be a new user without a role yet, or a user with a different flow.
-          // showError("Profil utilisateur introuvable ou rôle non défini."); // Removed this toast
           return undefined;
         }
 
@@ -69,7 +67,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         const fetchedRoleName = roleNameData?.name;
         if (!fetchedRoleName) {
           console.warn("SessionContextProvider: fetchUserRole - Role name not found for role_id:", profileData.role_id, "Data:", roleNameData);
-          // showError("Nom du rôle non défini pour l'ID de rôle."); // Removed this toast
         }
         console.log("SessionContextProvider: fetchUserRole - Fetched role name:", fetchedRoleName);
         return fetchedRoleName;
@@ -134,6 +131,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         console.error("SessionContextProvider: handleSessionChange - Error in handleSessionChange:", e.message);
         showError("Erreur lors de la gestion de la session: " + e.message);
       } finally {
+        console.log("SessionContextProvider: handleSessionChange - FINALLY block reached, setting isLoading to false.");
         setIsLoading(false); // Always set loading false
         console.log("SessionContextProvider: handleSessionChange - finished, setIsLoading(false)");
       }
@@ -190,6 +188,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         console.error("SessionContextProvider: getInitialSession - Error in getInitialSession:", e.message);
         showError("Erreur lors de la récupération de la session initiale: " + e.message);
       } finally {
+        console.log("SessionContextProvider: getInitialSession - FINALLY block reached, setting isLoading to false.");
         setIsLoading(false); // Always set loading false
         console.log("SessionContextProvider: getInitialSession - Initial session fetch finished, setIsLoading(false)");
       }
