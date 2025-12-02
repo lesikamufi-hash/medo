@@ -10,7 +10,7 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className, iconClas
   return (
     <div className={`flex justify-center space-x-6 ${className}`}>
       <a 
-        href="#" 
+        href="https://www.facebook.com/61584351152698/posts/pfbid02zw5ySyydiZCqMPpQ8wge8kE7BpaSZ8FXNGCdESzgLgpQvrx6JsDmuofQLwj2mN4Hl/?app=fbl" 
         target="_blank" 
         rel="noopener noreferrer" 
         className={`text-futi-accent hover:text-futi-white transition-all duration-300 ease-in-out transform hover:scale-125 hover:rotate-6 ${iconClassName}`}
