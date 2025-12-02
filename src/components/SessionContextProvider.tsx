@@ -41,13 +41,26 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
         if (error) {
           console.error("SessionContextProvider: fetchUserRole - Error fetching user role:", error.message);
+          showError("Erreur lors de la récupération du rôle utilisateur: " + error.message);
           return undefined;
         }
+        
+        if (!data) {
+          console.error("SessionContextProvider: fetchUserRole - No profile data found for user ID:", userId);
+          showError("Aucun profil trouvé pour cet utilisateur.");
+          return undefined;
+        }
+
         const fetchedRoleName = data?.role?.name;
+        if (!fetchedRoleName) {
+          console.warn("SessionContextProvider: fetchUserRole - User profile found but no role name associated or role is null for user ID:", userId, "Data:", data);
+          showError("Rôle utilisateur non défini. Veuillez contacter l'administrateur.");
+        }
         console.log("SessionContextProvider: fetchUserRole - Fetched role name:", fetchedRoleName);
         return fetchedRoleName;
       } catch (e: any) {
         console.error("SessionContextProvider: fetchUserRole - Unexpected error during role fetch:", e.message);
+        showError("Erreur inattendue lors de la récupération du rôle: " + e.message);
         return undefined;
       }
     };
