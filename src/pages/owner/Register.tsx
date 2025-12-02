@@ -23,10 +23,8 @@ const OwnerRegister = () => {
   const { user: sessionUser, isLoading: isSessionLoading } = useSession();
 
   useEffect(() => {
-    console.log("OwnerRegister: useEffect triggered.");
     // Fetch the 'owner' role ID when the component mounts
     const fetchOwnerRoleId = async () => {
-      console.log("OwnerRegister: fetchOwnerRoleId called.");
       const { data, error } = await supabase
         .from('roles')
         .select('id')
@@ -34,10 +32,9 @@ const OwnerRegister = () => {
         .single();
 
       if (error) {
-        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message, error); // Log the full error object
-        showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire': " + error.message);
+        console.error("OwnerRegister: Error fetching 'owner' role ID:", error.message);
+        showError("Erreur lors de la récupération de l'ID du rôle 'propriétaire'.");
       } else if (data) {
-        console.log("OwnerRegister: Successfully fetched 'owner' role ID:", data.id);
         setOwnerRoleId(data.id);
       } else {
         console.warn("OwnerRegister: Role 'owner' not found in the database or data is null.");
@@ -47,7 +44,6 @@ const OwnerRegister = () => {
     fetchOwnerRoleId();
 
     if (!isSessionLoading && sessionUser) {
-      console.log("OwnerRegister: User already logged in, checking role for redirection. Role:", sessionUser.role);
       if (sessionUser.role === 'owner') {
         navigate('/owner/dashboard', { replace: true });
       } else if (sessionUser.role === 'admin') {
